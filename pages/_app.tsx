@@ -1,8 +1,26 @@
-import '../styles/globals.css'
-import type { AppProps } from 'next/app'
+import "../styles/globals.scss"
 
-function MyApp({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />
+import type { AppProps } from "next/app"
+import { FunctionComponent } from "react"
+import { RecoilRoot } from "recoil"
+
+import { useTokenMonitor } from "@/hooks"
+
+const Spui: FunctionComponent<AppProps> = ({ Component, pageProps }) => {
+  // Refresh access token automatically when it gets close to expiring.
+  useTokenMonitor()
+
+  return (
+    <main>
+      <Component {...pageProps} />
+    </main>
+  )
 }
 
-export default MyApp
+const App: FunctionComponent<AppProps> = (props) => (
+  <RecoilRoot>
+    <Spui {...props} />
+  </RecoilRoot>
+)
+
+export default App
