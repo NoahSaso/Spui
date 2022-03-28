@@ -29,12 +29,18 @@ const Home: NextPage = () => {
 
   return (
     <div className="">
-      {isLoggedIn ? "Logged in" : "Not logged in"}
+      <p>{isLoggedIn ? "Logged in" : "Not logged in"}</p>
 
       {isLoggedIn ? (
         <>
-          {playlistsState}
-          {JSON.stringify(playlists, null, 2)}
+          <p>
+            {playlistsState === "loading"
+              ? "Loading playlists..."
+              : playlistsState === "hasValue"
+              ? "Loaded playlists"
+              : "Error loading playlists"}
+          </p>
+          <pre>{JSON.stringify(playlists, null, 2)}</pre>
         </>
       ) : (
         <>
