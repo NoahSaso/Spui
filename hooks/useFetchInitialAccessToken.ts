@@ -33,7 +33,7 @@ export const useFetchInitialAccessToken = () => {
 
         if (response.success) {
           setAccessToken({
-            accessToken: response.data.access_token,
+            token: response.data.access_token,
             expiresAtEpoch: Date.now() + response.data.expires_in * 1000,
           })
           setRefreshToken(response.data.refresh_token)

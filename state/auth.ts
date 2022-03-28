@@ -9,7 +9,7 @@ export const clientIdAtom = atom<string | null>({
 })
 
 interface AccessToken {
-  accessToken: string
+  token: string
   expiresAtEpoch: number
 }
 
@@ -32,7 +32,7 @@ export const validAccessTokenOrNull = selector({
   get: ({ get }) => {
     const accessToken = get(accessTokenAtom)
     return accessToken && accessToken.expiresAtEpoch > Date.now()
-      ? accessToken
+      ? accessToken.token
       : null
   },
 })

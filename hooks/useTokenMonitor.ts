@@ -1,7 +1,8 @@
 import { useEffect } from "react"
 import { useRecoilState, useRecoilValue } from "recoil"
 
-import { KnownError, requestRefreshedAccessToken } from "@/services/api/auth"
+import { requestRefreshedAccessToken } from "@/services/api/auth"
+import { KnownError } from "@/services/api/common"
 import { accessTokenAtom, clientIdAtom, refreshTokenAtom } from "@/state"
 
 export const useTokenMonitor = (refreshCallback?: () => void) => {
@@ -20,7 +21,7 @@ export const useTokenMonitor = (refreshCallback?: () => void) => {
       console.log("Refreshing access token...")
 
       if (
-        !accessToken ||
+        accessToken &&
         // Ignore if expires in over 15 minutes.
         accessToken.expiresAtEpoch - Date.now() > 1000 * 60 * 15
       )
@@ -40,7 +41,7 @@ export const useTokenMonitor = (refreshCallback?: () => void) => {
       if (response.success) {
         // Update access token.
         setAccessToken({
-          accessToken: response.data.access_token,
+          token: response.data.access_token,
           expiresAtEpoch: Date.now() + response.data.expires_in * 1000,
         })
 
