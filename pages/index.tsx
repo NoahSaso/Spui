@@ -17,8 +17,7 @@ const Home: NextPage = () => {
 
   const onSubmit: SubmitHandler<ConnectForm> = async ({ clientId }) => {
     setClientId(clientId)
-    const url = await generateLogin(clientId)
-    window.open(url)
+    window.location.href = await generateLogin(clientId)
   }
 
   return (
