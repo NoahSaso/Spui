@@ -8,7 +8,7 @@ import {
   scope,
   stateChars,
 } from "@/config"
-import { randomString, sha256 } from "@/utils"
+import { randomString, sha256Base64URLEncoded } from "@/utils"
 
 // Stores state and codeVerifier in localStorage to be retrieved on callback.
 export const generateLogin = async (clientId: string): Promise<string> => {
@@ -18,7 +18,7 @@ export const generateLogin = async (clientId: string): Promise<string> => {
   const codeVerifier = randomString(authChars, authLen)
   localStorage.setItem(localStorageCodeVerifierKey, codeVerifier)
 
-  const codeChallenge = await sha256(codeVerifier)
+  const codeChallenge = await sha256Base64URLEncoded(codeVerifier)
 
   return (
     "https://accounts.spotify.com/authorize?" +
@@ -47,26 +47,26 @@ export const requestAccessToken = async (
   codeVerifier: string,
   code: string
 ): Promise<ApiTokenResponse> => {
-  const body = Object.entries({
-    grant_type: "authorization_code",
-    code,
-    redirect_uri: redirectUri,
-    client_id: clientId,
-    code_verifier: codeVerifier,
-  }).reduce((formData, [key, value]) => {
-    formData.append(key, value)
-    return formData
-  }, new FormData())
-
   const response = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
-    body,
+    body: new URLSearchParams({
+      grant_type: "authorization_code",
+      code,
+      redirect_uri: redirectUri,
+      client_id: clientId,
+      code_verifier: codeVerifier,
+    }),
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
   })
   if (response.status !== 200) {
-    throw new Error(`Error requesting access token: ${response.status}`)
+    let error = await response.json().catch(() => undefined)
+    throw new Error(
+      `Error requesting access token: ${response.status} ${
+        error && JSON.stringify(error)
+      }`.trim()
+    )
   }
 
   return (await response.json()) as ApiTokenResponse
@@ -83,18 +83,13 @@ export const requestRefreshedAccessToken = async (
   clientId: string,
   refreshToken: string
 ): Promise<ApiRefreshTokenResponse> => {
-  const body = Object.entries({
-    grant_type: "refresh_token",
-    refresh_token: refreshToken,
-    client_id: clientId,
-  }).reduce((formData, [key, value]) => {
-    formData.append(key, value)
-    return formData
-  }, new FormData())
-
   const response = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
-    body,
+    body: new URLSearchParams({
+      grant_type: "refresh_token",
+      refresh_token: refreshToken,
+      client_id: clientId,
+    }),
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
