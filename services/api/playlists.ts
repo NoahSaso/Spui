@@ -1,6 +1,38 @@
 import { ApiResponse, get as _get } from "./common"
 
-export interface Playlist {}
+export interface Playlist {
+  collaborative: boolean
+  description: string | null
+  external_urls: {
+    spotify: string
+  }
+  href: string
+  id: string
+  images: {
+    url: string
+    height: number | null
+    width: number | null
+  }[]
+  name: string
+  owner: {
+    display_name: string
+    external_urls: {
+      spotify: string
+    }
+    href: string
+    id: string
+    type: "user"
+    uri: string
+  }
+  public: boolean | null
+  snapshot_id: string
+  tracks: {
+    href: string
+    total: number
+  }
+  type: "playlist"
+  uri: string
+}
 
 export type GetPlaylistsResponse = ApiResponse<{
   href: string
