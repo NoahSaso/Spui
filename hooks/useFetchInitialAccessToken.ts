@@ -30,13 +30,16 @@ export const useFetchInitialAccessToken = () => {
 
       try {
         const response = await requestAccessToken(clientId, codeVerifier, code)
-        console.log(response)
 
-        setAccessToken({
-          accessToken: response.access_token,
-          expiresAtEpoch: Date.now() + response.expires_in * 1000,
-        })
-        setRefreshToken(response.refresh_token)
+        if (response.success) {
+          setAccessToken({
+            accessToken: response.data.access_token,
+            expiresAtEpoch: Date.now() + response.data.expires_in * 1000,
+          })
+          setRefreshToken(response.data.refresh_token)
+        } else {
+          throw new Error(response.error.known || response.error.description)
+        }
       } catch (error) {
         console.error(error)
         setError(error instanceof Error ? error.message : `${error}`)
