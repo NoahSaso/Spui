@@ -26,3 +26,5 @@ export const codeChallengeMethod = "S256"
 // Local Storage Keys
 export const localStorageStateKey = "state"
 export const localStorageCodeVerifierKey = "codeVerifier"
+
+export const defaultClientId = process.env.NEXT_PUBLIC_DEFAULT_CLIENT_ID

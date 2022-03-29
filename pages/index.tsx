@@ -5,7 +5,7 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { useSetRecoilState } from "recoil"
 
 import { Loader } from "@/components"
-import { localStorageStateKey } from "@/config"
+import { defaultClientId, localStorageStateKey } from "@/config"
 import { useFetchInitialAccessToken, useRequireAuthentication } from "@/hooks"
 import { generateLogin } from "@/services/api/auth"
 import { clientIdAtom } from "@/state"
@@ -20,7 +20,11 @@ const Home: NextPage = () => {
 
   const setClientId = useSetRecoilState(clientIdAtom)
 
-  const { register, handleSubmit } = useForm<ConnectForm>()
+  const { register, handleSubmit } = useForm<ConnectForm>({
+    defaultValues: {
+      clientId: defaultClientId,
+    },
+  })
 
   const onSubmit: SubmitHandler<ConnectForm> = async ({ clientId }) => {
     setClientId(clientId)
@@ -114,12 +118,12 @@ const Home: NextPage = () => {
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col items-stretch gap-2 text-dark w-full"
         >
-          <input
+          {/* <input
             type="text"
             placeholder="Client ID"
             className="py-2 px-4 rounded-full"
             {...register("clientId", { required: true })}
-          />
+          /> */}
 
           <input
             type="submit"
