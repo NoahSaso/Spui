@@ -21,7 +21,7 @@ export const stateChars =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 export const authChars = stateChars + "_.-~"
 export const authLen = 128
-export const redirectUri = "http://localhost:3000/"
+export const redirectUri = process.env.NEXT_PUBLIC_REDIRECT_URI
 export const codeChallengeMethod = "S256"
 // Local Storage Keys
 export const localStorageStateKey = "state"
