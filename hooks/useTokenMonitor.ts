@@ -1,8 +1,9 @@
 import { useEffect } from "react"
+import { toast } from "react-toastify"
 import { useRecoilState, useRecoilValue } from "recoil"
 
 import { requestRefreshedAccessToken } from "@/services/api/auth"
-import { KnownError } from "@/services/api/common"
+import { ApiError, KnownError } from "@/services/api/common"
 import { accessTokenAtom, clientIdAtom, refreshTokenAtom } from "@/state"
 
 export const useTokenMonitor = (refreshCallback?: () => void) => {
@@ -33,31 +34,40 @@ export const useTokenMonitor = (refreshCallback?: () => void) => {
         return
       }
 
-      const response = await requestRefreshedAccessToken(
-        clientId,
-        refreshToken!
-      )
+      try {
+        const response = await requestRefreshedAccessToken(
+          clientId,
+          refreshToken!
+        )
 
-      if (response.success) {
         // Update access token.
         setAccessToken({
-          token: response.data.access_token,
-          expiresAtEpoch: Date.now() + response.data.expires_in * 1000,
+          token: response.access_token,
+          expiresAtEpoch: Date.now() + response.expires_in * 1000,
         })
 
         // Update refresh token.
-        setRefreshToken(response.data.refresh_token)
+        setRefreshToken(response.refresh_token)
 
         // Execute refresh callback if provided.
         refreshCallback?.()
 
         console.log("Refreshed access token!")
-      } else {
-        if (response.error.known === KnownError.RefreshTokenRevoked) {
+      } catch (error) {
+        if (!(error instanceof ApiError)) {
+          console.error(error)
+        }
+
+        if (
+          error instanceof ApiError &&
+          error.data.known === KnownError.RefreshTokenRevoked
+        ) {
           setRefreshToken(null)
           setAccessToken(null)
         } else {
-          throw new Error(response.error.message)
+          toast.error(
+            "Error logging into Spotify. Please refresh the page or log out and log back in."
+          )
         }
       }
     }

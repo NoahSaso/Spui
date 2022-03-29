@@ -11,18 +11,22 @@
   "dependencies": {
     "autoprefixer": "^10.4.4",
     "classnames": "^2.3.1",
-    "next": "12.1.1",
+    "emotion": "^11.0.0",
+    "next": "^12.1.2",
     "postcss": "^8.4.12",
     "react": "17.0.2",
     "react-dnd": "^15.1.1",
     "react-dom": "17.0.2",
     "react-hook-form": "^7.28.1",
     "react-icons": "^4.3.1",
+    "react-spinners": "^0.11.0",
     "react-spotify-web-playback-sdk": "^3.0.1",
+    "react-toastify": "^8.2.0",
     "recoil": "^0.6.1",
     "sass": "^1.49.9",
     "sharp": "^0.30.3",
-    "tailwindcss": "^3.0.23"
+    "tailwindcss": "^3.0.23",
+    "tailwindcss-safe-area": "^0.2.2"
   },
   "devDependencies": {
     "@types/node": "17.0.23",

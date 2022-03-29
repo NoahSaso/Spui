@@ -4,19 +4,22 @@ import { useRecoilValue, useSetRecoilState } from "recoil"
 
 import { localStorageCodeVerifierKey, localStorageStateKey } from "@/config"
 import { requestAccessToken } from "@/services/api/auth"
+import { ApiError } from "@/services/api/common"
 import { accessTokenAtom, clientIdAtom, refreshTokenAtom } from "@/state"
 
-export const useFetchInitialAccessToken = (
-  redirectOnSuccess = "/playlists"
-) => {
+export const useFetchInitialAccessToken = (redirectOnSuccess = "/search") => {
   const { push: routerPush } = useRouter()
+
   const clientId = useRecoilValue(clientIdAtom)
   const setAccessToken = useSetRecoilState(accessTokenAtom)
   const setRefreshToken = useSetRecoilState(refreshTokenAtom)
+
   const [error, setError] = useState<string>()
 
   const fetchInitialAccessToken = useCallback(
     async (code: string) => {
+      setError(undefined)
+
       // Retrieve and validate saved client ID and code verifier.
       if (!clientId) {
         console.error("Missing client ID")
@@ -33,17 +36,15 @@ export const useFetchInitialAccessToken = (
       try {
         const response = await requestAccessToken(clientId, codeVerifier, code)
 
-        if (response.success) {
-          setAccessToken({
-            token: response.data.access_token,
-            expiresAtEpoch: Date.now() + response.data.expires_in * 1000,
-          })
-          setRefreshToken(response.data.refresh_token)
-        } else {
-          throw new Error(response.error.message)
-        }
+        setAccessToken({
+          token: response.access_token,
+          expiresAtEpoch: Date.now() + response.expires_in * 1000,
+        })
+        setRefreshToken(response.refresh_token)
       } catch (error) {
-        console.error(error)
+        if (!(error instanceof ApiError)) {
+          console.error(error)
+        }
         setError(error instanceof Error ? error.message : `${error}`)
         return
       }

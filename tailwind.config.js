@@ -1,4 +1,7 @@
-const { screens } = require("tailwindcss/defaultTheme")
+const {
+  colors: defaultColors,
+  screens: defaultScreens,
+} = require("tailwindcss/defaultTheme")
 const { colors } = require("./theme")
 
 module.exports = {
@@ -9,11 +12,19 @@ module.exports = {
     "./helpers/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    colors,
+    colors: {
+      ...defaultColors,
+      ...colors,
+    },
     screens: {
       xs: "416px",
-      ...screens,
+      ...defaultScreens,
+    },
+    extend: {
+      height: {
+        footer: "4rem",
+      },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-safe-area")],
 }

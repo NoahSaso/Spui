@@ -1,8 +1,8 @@
 import { Playlist, PlaylistTrack } from "@/types"
 
-import { ApiResponse, get as _get } from "./common"
+import { get as _get } from "./common"
 
-export type GetPlaylistsResponse = ApiResponse<{
+export type GetPlaylistsResponse = {
   href: string
   items: Playlist[]
   limit: number
@@ -10,7 +10,7 @@ export type GetPlaylistsResponse = ApiResponse<{
   offset: number
   previous: string | null
   total: number
-}>
+}
 
 export const get = async (
   accessToken: string,
@@ -23,7 +23,7 @@ export const get = async (
     ...(offset && { offset }),
   })
 
-export type GetPlaylistTracksResponse = ApiResponse<{
+export type GetPlaylistTracksResponse = {
   href: string
   items: PlaylistTrack[]
   limit: number
@@ -31,7 +31,7 @@ export type GetPlaylistTracksResponse = ApiResponse<{
   offset: number
   previous: string | null
   total: number
-}>
+}
 
 export const getTracks = async (
   accessToken: string,

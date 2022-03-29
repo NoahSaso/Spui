@@ -10,7 +10,7 @@ import {
 } from "@/config"
 import { randomString, sha256Base64URLEncoded } from "@/utils"
 
-import { ApiResponse, postAccountForm } from "./common"
+import { postAccountForm } from "./common"
 
 // Stores state and codeVerifier in localStorage to be retrieved on callback.
 export const generateLogin = async (clientId: string): Promise<string> => {
@@ -36,13 +36,13 @@ export const generateLogin = async (clientId: string): Promise<string> => {
   )
 }
 
-type ApiTokenResponse = ApiResponse<{
+type ApiTokenResponse = {
   access_token: string
   token_type: string
   scope: string
   expires_in: number
   refresh_token: string
-}>
+}
 
 export const requestAccessToken = async (
   clientId: string,

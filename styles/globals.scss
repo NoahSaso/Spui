@@ -13,18 +13,15 @@ html {
 html,
 body,
 #__next {
-  min-height: 100%;
+  width: 100%;
+  height: 100%;
   color: theme("colors.light");
   background-color: theme("colors.dark");
 }
 
-#__next {
-  min-height: 100vh;
-  position: relative;
-}
-
 main {
-  position: relative;
+  overflow-y: auto;
+  flex: 1;
 }
 
 a {

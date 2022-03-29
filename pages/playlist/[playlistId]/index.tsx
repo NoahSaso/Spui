@@ -1,10 +1,10 @@
 import type { NextPage } from "next"
 import { useRouter } from "next/router"
 import { useRecoilValueLoadable } from "recoil"
-import { getPlaylistTracks } from "state/playlists"
 
-import { PlaylistTrackRow } from "@/components"
+import { Loader, PlaylistTrackRow } from "@/components"
 import { useRequireAuthentication } from "@/hooks"
+import { getPlaylistTracks } from "@/state"
 
 const PlaylistPage: NextPage = () => {
   useRequireAuthentication()
@@ -21,22 +21,19 @@ const PlaylistPage: NextPage = () => {
     loadable.state === "hasError" ? loadable.contents.message : undefined
 
   return (
-    <div className="">
-      <>
-        <p>
-          {loadable.state === "loading"
-            ? "Loading tracks..."
-            : loadable.state === "hasError"
-            ? tracksError
-            : null}
-        </p>
-        <div>
-          {tracks?.map((track) => (
-            <PlaylistTrackRow key={track.track.id} track={track} />
-          ))}
-        </div>
-      </>
-    </div>
+    <>
+      {loadable.state === "loading" ? (
+        <Loader expand />
+      ) : loadable.state === "hasError" ? (
+        <p>{tracksError}</p>
+      ) : null}
+
+      <div>
+        {tracks?.map((track) => (
+          <PlaylistTrackRow key={track.track.id} track={track} />
+        ))}
+      </div>
+    </>
   )
 }
 

@@ -4,10 +4,11 @@ export enum KnownError {
   RefreshTokenRevoked = "Refresh token revoked.",
 }
 
-const knownErrorMatchMap: Record<
-  KnownError,
-  { error: string; description: string }
-> = {
+type ErrorMatchData =
+  | { error: string; description: string }
+  | { message: string }
+
+const knownErrorMatchMap: Record<KnownError, ErrorMatchData> = {
   [KnownError.RefreshTokenRevoked]: {
     error: "invalid_grant",
     description: "Refresh token revoked",
@@ -15,46 +16,54 @@ const knownErrorMatchMap: Record<
 }
 const KnownErrorMatchEntries = Object.entries(knownErrorMatchMap)
 
-const matchKnownError = (
-  error: string,
-  description: string
-): KnownError | undefined => {
+const matchKnownError = (data: ErrorMatchData): KnownError | undefined => {
   const matched = KnownErrorMatchEntries.find(
     ([_, expected]) =>
-      expected.error === error && expected.description === description
+      ("message" in data &&
+        "message" in expected &&
+        data.message === expected.message) ||
+      ("description" in data &&
+        "description" in expected &&
+        data.error === expected.error &&
+        data.description === expected.description)
   )
   return matched?.[0] as KnownError | undefined
 }
 
-export type ApiResponse<D> =
-  | {
-      success: true
-      data: D
-    }
-  | {
-      success: false
-      error: {
-        known: KnownError | undefined
-        status: number
-        type: string
-        description: string
-        // known or description
-        message: string
-      }
-    }
+interface ApiErrorData {
+  status: number
+  known: KnownError | undefined
+  type: string
+  description: string
+}
 
-const processResponse = async <D>(
-  response: Response
-): Promise<ApiResponse<D>> => {
+export class ApiError extends Error {
+  data: ApiErrorData
+
+  constructor(message: string, data: ApiErrorData) {
+    super(message)
+    this.data = data
+  }
+}
+
+const processResponse = async <D>(response: Response): Promise<D> => {
   const data = await response.json().catch(() => undefined)
 
-  if (response.status === 200) {
-    return {
-      success: true,
-      data,
-    }
+  if (response.ok) {
+    return data
   } else {
-    const known = data && matchKnownError(data.error, data.error_description)
+    const known =
+      data &&
+      matchKnownError(
+        "error_description" in data
+          ? {
+              error: data.error,
+              description: data.error_description,
+            }
+          : {
+              message: data.error.message,
+            }
+      )
     const errorData =
       data && "error" in data && "error_description" in data
         ? {
@@ -71,24 +80,23 @@ const processResponse = async <D>(
             description: "Unknown error",
           }
 
-    return {
-      success: false,
-      error: {
-        known,
-        status: response.status,
-        ...errorData,
-        message: known || errorData.description,
-      },
-    }
+    const error = new ApiError(known || errorData.description, {
+      known,
+      status: response.status,
+      ...errorData,
+    })
+    console.error(error)
+
+    throw error
   }
 }
 
-export const get = async (
+export const get = async <D>(
   accessToken: string,
   endpoint: string,
   query: Record<string, any>,
   headers: Record<string, string> = {}
-): Promise<ApiResponse<any>> =>
+): Promise<D> =>
   processResponse(
     await fetch(
       ApiPrefix + endpoint + "?" + new URLSearchParams(query).toString(),
@@ -103,30 +111,36 @@ export const get = async (
     )
   )
 
-export const post = async (
+export const post = async <D>(
   accessToken: string,
   endpoint: string,
-  body: Record<string, any>,
+  query?: Record<string, any>,
+  body?: Record<string, any>,
   headers: Record<string, string> = {}
-): Promise<ApiResponse<any>> =>
+): Promise<D> =>
   processResponse(
-    await fetch(ApiPrefix + endpoint, {
-      method: "POST",
-      body: new URLSearchParams(body),
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${accessToken}`,
-        ...headers,
-      },
-    })
+    await fetch(
+      ApiPrefix +
+        endpoint +
+        (query ? "?" + new URLSearchParams(query).toString() : ""),
+      {
+        method: "POST",
+        ...(body && { body: new URLSearchParams(body) }),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          ...headers,
+        },
+      }
+    )
   )
 
-export const postAccountForm = async (
+export const postAccountForm = async <D>(
   endpoint: string,
   body: Record<string, any>,
   headers: Record<string, string> = {}
-): Promise<ApiResponse<any>> =>
+): Promise<D> =>
   processResponse(
     await fetch(AccountApiPrefix + endpoint, {
       method: "POST",

@@ -30,11 +30,9 @@ export const getAllPlaylists = selector<Playlist[] | undefined>({
       const pagedPlaylists = get(getPlaylistsPaged({ page: page++ }))
       // No access token.
       if (!pagedPlaylists) return
-      // Bad API response.
-      if (!pagedPlaylists.success) throw pagedPlaylists.error
 
-      playlists.push(...pagedPlaylists.data.items)
-      pagesLeft = pagedPlaylists.data.next !== null
+      playlists.push(...pagedPlaylists.items)
+      pagesLeft = pagedPlaylists.next !== null
     } while (pagesLeft)
 
     return playlists
@@ -66,11 +64,9 @@ export const getPlaylistTracks = selectorFamily<
           limit,
           (page - 1) * limit
         )
-        // Bad API response.
-        if (!pagedTracks.success) throw pagedTracks.error
 
-        tracks.push(...pagedTracks.data.items)
-        pagesLeft = pagedTracks.data.next !== null
+        tracks.push(...pagedTracks.items)
+        pagesLeft = pagedTracks.next !== null
 
         page++
       } while (pagesLeft)
