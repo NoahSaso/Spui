@@ -6,7 +6,7 @@ import { IconType } from "react-icons"
 import { CgPlayList } from "react-icons/cg"
 import { IoSearch } from "react-icons/io5"
 import { MdAccountCircle } from "react-icons/md"
-import { useRecoilValue, useRecoilState } from "recoil"
+import { useRecoilValue } from "recoil"
 
 import { isLoggedInSelector } from "@/state"
 import { colors } from "@/theme"
