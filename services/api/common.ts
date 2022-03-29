@@ -38,6 +38,8 @@ export type ApiResponse<D> =
         status: number
         type: string
         description: string
+        // known or description
+        message: string
       }
     }
 
@@ -53,13 +55,29 @@ const processResponse = async <D>(
     }
   } else {
     const known = data && matchKnownError(data.error, data.error_description)
+    const errorData =
+      data && "error" in data && "error_description" in data
+        ? {
+            type: data.error,
+            description: data.error_description,
+          }
+        : data && "error" in data && "message" in data.error
+        ? {
+            type: "unknown",
+            description: data.error.message,
+          }
+        : {
+            type: "unknown",
+            description: "Unknown error",
+          }
+
     return {
       success: false,
       error: {
         known,
         status: response.status,
-        type: data?.error ?? "unknown",
-        description: data?.error_description ?? JSON.stringify(data),
+        ...errorData,
+        message: known || errorData.description,
       },
     }
   }

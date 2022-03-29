@@ -21,8 +21,6 @@ body,
 #__next {
   min-height: 100vh;
   position: relative;
-  // Create space for footer.
-  padding-bottom: theme("height.footer");
 }
 
 main {

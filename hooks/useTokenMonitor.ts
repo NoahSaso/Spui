@@ -57,7 +57,7 @@ export const useTokenMonitor = (refreshCallback?: () => void) => {
           setRefreshToken(null)
           setAccessToken(null)
         } else {
-          throw new Error(response.error.known || response.error.description)
+          throw new Error(response.error.message)
         }
       }
     }

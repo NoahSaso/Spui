@@ -6,7 +6,9 @@ import { localStorageCodeVerifierKey, localStorageStateKey } from "@/config"
 import { requestAccessToken } from "@/services/api/auth"
 import { accessTokenAtom, clientIdAtom, refreshTokenAtom } from "@/state"
 
-export const useFetchInitialAccessToken = () => {
+export const useFetchInitialAccessToken = (
+  redirectOnSuccess = "/playlists"
+) => {
   const { push: routerPush } = useRouter()
   const clientId = useRecoilValue(clientIdAtom)
   const setAccessToken = useSetRecoilState(accessTokenAtom)
@@ -38,7 +40,7 @@ export const useFetchInitialAccessToken = () => {
           })
           setRefreshToken(response.data.refresh_token)
         } else {
-          throw new Error(response.error.known || response.error.description)
+          throw new Error(response.error.message)
         }
       } catch (error) {
         console.error(error)
@@ -50,10 +52,17 @@ export const useFetchInitialAccessToken = () => {
       localStorage.removeItem(localStorageStateKey)
       localStorage.removeItem(localStorageCodeVerifierKey)
 
-      // Redirect home now that we're authenticated.
-      routerPush("/")
+      // Redirect once we're authenticated.
+      routerPush(redirectOnSuccess)
     },
-    [clientId, setAccessToken, setRefreshToken, routerPush, setError]
+    [
+      clientId,
+      setAccessToken,
+      setRefreshToken,
+      routerPush,
+      setError,
+      redirectOnSuccess,
+    ]
   )
 
   return { fetchInitialAccessToken, error }

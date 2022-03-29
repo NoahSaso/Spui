@@ -1,24 +1,20 @@
 import type { NextPage } from "next"
 import { SubmitHandler, useForm } from "react-hook-form"
-import {
-  useRecoilValue,
-  useRecoilValueLoadable,
-  useSetRecoilState,
-} from "recoil"
+import { useSetRecoilState } from "recoil"
 
+import { useRequireAuthentication } from "@/hooks"
 import { generateLogin } from "@/services/api/auth"
-import { clientIdAtom, getPlaylists, isLoggedInSelector } from "@/state"
+import { clientIdAtom } from "@/state"
 
 interface ConnectForm {
   clientId: string
 }
 
 const Home: NextPage = () => {
-  const isLoggedIn = useRecoilValue(isLoggedInSelector)
+  // Redirect to playlists if already logged in.
+  useRequireAuthentication(false, "/playlists")
+
   const setClientId = useSetRecoilState(clientIdAtom)
-  const { state: playlistsState, contents: playlists } = useRecoilValueLoadable(
-    getPlaylists({})
-  )
 
   const { register, handleSubmit } = useForm<ConnectForm>()
 
@@ -28,33 +24,24 @@ const Home: NextPage = () => {
   }
 
   return (
-    <div className="">
-      <p>{isLoggedIn ? "Logged in" : "Not logged in"}</p>
+    <div className="flex items-center justify-center w-full max-w-sm px-10 h-[100vh] mx-auto">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col items-stretch gap-2 text-dark w-full"
+      >
+        <input
+          type="text"
+          placeholder="Client ID"
+          className="py-2 px-4 rounded-full"
+          {...register("clientId", { required: true })}
+        />
 
-      {isLoggedIn ? (
-        <>
-          <p>
-            {playlistsState === "loading"
-              ? "Loading playlists..."
-              : playlistsState === "hasValue"
-              ? "Loaded playlists"
-              : "Error loading playlists"}
-          </p>
-          <pre>{JSON.stringify(playlists, null, 2)}</pre>
-        </>
-      ) : (
-        <>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <input
-              type="text"
-              placeholder="Client ID"
-              {...register("clientId", { required: true })}
-            />
-
-            <input type="submit" value="Connect to Spotify" />
-          </form>
-        </>
-      )}
+        <input
+          type="submit"
+          value="Connect to Spotify"
+          className="bg-spotify rounded-full py-2 px-4 cursor-pointer hover:opacity-80 transition"
+        />
+      </form>
     </div>
   )
 }
