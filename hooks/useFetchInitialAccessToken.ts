@@ -1,4 +1,3 @@
-import { useRouter } from "next/router"
 import { useCallback, useState } from "react"
 import { useRecoilValue, useSetRecoilState } from "recoil"
 
@@ -7,9 +6,7 @@ import { requestAccessToken } from "@/services/api/auth"
 import { ApiError } from "@/services/api/common"
 import { accessTokenAtom, clientIdAtom, refreshTokenAtom } from "@/state"
 
-export const useFetchInitialAccessToken = (redirectOnSuccess = "/search") => {
-  const { push: routerPush } = useRouter()
-
+export const useFetchInitialAccessToken = () => {
   const clientId = useRecoilValue(clientIdAtom)
   const setAccessToken = useSetRecoilState(accessTokenAtom)
   const setRefreshToken = useSetRecoilState(refreshTokenAtom)
@@ -17,20 +14,20 @@ export const useFetchInitialAccessToken = (redirectOnSuccess = "/search") => {
   const [error, setError] = useState<string>()
 
   const fetchInitialAccessToken = useCallback(
-    async (code: string) => {
+    async (code: string): Promise<boolean> => {
       setError(undefined)
 
       // Retrieve and validate saved client ID and code verifier.
       if (!clientId) {
         console.error("Missing client ID")
         setError("Missing client ID")
-        return
+        return false
       }
       const codeVerifier = localStorage.getItem(localStorageCodeVerifierKey)
       if (!codeVerifier) {
         console.error("Missing code verifier")
         setError("Missing code verifier")
-        return
+        return false
       }
 
       try {
@@ -46,24 +43,16 @@ export const useFetchInitialAccessToken = (redirectOnSuccess = "/search") => {
           console.error(error)
         }
         setError(error instanceof Error ? error.message : `${error}`)
-        return
+        return false
       }
 
       // Clear the local storage.
       localStorage.removeItem(localStorageStateKey)
       localStorage.removeItem(localStorageCodeVerifierKey)
 
-      // Redirect once we're authenticated.
-      routerPush(redirectOnSuccess)
+      return true
     },
-    [
-      clientId,
-      setAccessToken,
-      setRefreshToken,
-      routerPush,
-      setError,
-      redirectOnSuccess,
-    ]
+    [clientId, setAccessToken, setRefreshToken, setError]
   )
 
   return { fetchInitialAccessToken, error }

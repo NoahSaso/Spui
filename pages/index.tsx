@@ -57,29 +57,37 @@ const Home: NextPage = () => {
 
     const auth = async () => {
       setAuthenticating(true)
-      try {
-        // Get original state for comparison.
-        const originalState = localStorage.getItem(localStorageStateKey)
-        if (originalState === null) {
-          console.error("Missing state", originalState === null)
-          setError("Missing state. See console for more details.")
-          return
-        }
 
-        if (state !== originalState) {
-          console.error("Invalid state", state, originalState)
-          setError("Invalid state. See console for more details.")
-          return
-        }
+      // Get original state for comparison.
+      const originalState = localStorage.getItem(localStorageStateKey)
+      if (originalState === null) {
+        console.error("Missing state", originalState === null)
+        setError("Missing state. See console for more details.")
+        setAuthenticating(false)
+        return
+      }
 
-        if (typeof error === "string") {
-          setError(error)
-        } else if (typeof code === "string") {
-          await fetchInitialAccessToken(code)
+      if (state !== originalState) {
+        console.error("Invalid state", state, originalState)
+        setError("Invalid state. See console for more details.")
+        setAuthenticating(false)
+        return
+      }
+
+      if (typeof error === "string") {
+        setError(error)
+        setAuthenticating(false)
+      } else if (typeof code === "string") {
+        // Don't hide authentication loader on success since we are now
+        // redirecting and don't want to blink the Spotify login form.
+        if (await fetchInitialAccessToken(code)) {
+          // Redirect once we're authenticated.
+          routerPush("/search")
         } else {
-          setError("Unexpected response :(")
+          setAuthenticating(false)
         }
-      } finally {
+      } else {
+        setError("Unexpected response :(")
         setAuthenticating(false)
       }
     }

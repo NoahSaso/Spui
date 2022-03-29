@@ -60,7 +60,8 @@ export const useTokenMonitor = (refreshCallback?: () => void) => {
 
         if (
           error instanceof ApiError &&
-          error.data.known === KnownError.RefreshTokenRevoked
+          (error.data.known === KnownError.RefreshTokenRevoked ||
+            error.data.known === KnownError.InvalidRefreshToken)
         ) {
           setRefreshToken(null)
           setAccessToken(null)

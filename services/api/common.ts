@@ -2,30 +2,38 @@ import { AccountApiPrefix, ApiPrefix } from "@/config"
 
 export enum KnownError {
   RefreshTokenRevoked = "Refresh token revoked.",
+  InvalidRefreshToken = "Invalid refresh token.",
+  NoActiveDevice = "No active device.",
 }
 
-type ErrorMatchData =
-  | { error: string; description: string }
-  | { message: string }
-
-const knownErrorMatchMap: Record<KnownError, ErrorMatchData> = {
+// Strings will be checked as substrings.
+// All else will be matched exactly.
+const knownErrorMatchMap: Record<KnownError, Record<string, any>> = {
   [KnownError.RefreshTokenRevoked]: {
     error: "invalid_grant",
-    description: "Refresh token revoked",
+    error_description: "Refresh token revoked",
+  },
+  [KnownError.InvalidRefreshToken]: {
+    error: "invalid_grant",
+    error_description: "Invalid refresh token",
+  },
+  [KnownError.NoActiveDevice]: {
+    status: 404,
+    reason: "NO_ACTIVE_DEVICE",
   },
 }
 const KnownErrorMatchEntries = Object.entries(knownErrorMatchMap)
 
-const matchKnownError = (data: ErrorMatchData): KnownError | undefined => {
-  const matched = KnownErrorMatchEntries.find(
-    ([_, expected]) =>
-      ("message" in data &&
-        "message" in expected &&
-        data.message === expected.message) ||
-      ("description" in data &&
-        "description" in expected &&
-        data.error === expected.error &&
-        data.description === expected.description)
+const matchKnownError = (data: Record<string, any>): KnownError | undefined => {
+  const matched = KnownErrorMatchEntries.find(([_, expected]) =>
+    Object.entries(expected).every(
+      ([key, value]) =>
+        key in data &&
+        ((typeof data[key] === "string" &&
+          typeof value === "string" &&
+          (data[key] as string).includes(value)) ||
+          data[key] === value)
+    )
   )
   return matched?.[0] as KnownError | undefined
 }
@@ -33,8 +41,6 @@ const matchKnownError = (data: ErrorMatchData): KnownError | undefined => {
 interface ApiErrorData {
   status: number
   known: KnownError | undefined
-  type: string
-  description: string
 }
 
 export class ApiError extends Error {
@@ -46,44 +52,25 @@ export class ApiError extends Error {
   }
 }
 
-const processResponse = async <D>(response: Response): Promise<D> => {
+const processResponse = async <D>(
+  response: Response,
+  // Account API errors are formatted differently.
+  accountApi = false
+): Promise<D> => {
   const data = await response.json().catch(() => undefined)
 
   if (response.ok) {
     return data
   } else {
-    const known =
-      data &&
-      matchKnownError(
-        "error_description" in data
-          ? {
-              error: data.error,
-              description: data.error_description,
-            }
-          : {
-              message: data.error.message,
-            }
-      )
-    const errorData =
-      data && "error" in data && "error_description" in data
-        ? {
-            type: data.error,
-            description: data.error_description,
-          }
-        : data && "error" in data && "message" in data.error
-        ? {
-            type: "unknown",
-            description: data.error.message,
-          }
-        : {
-            type: "unknown",
-            description: "Unknown error",
-          }
+    const errorData = accountApi ? data : data?.error
+    const message = accountApi
+      ? errorData.error_description
+      : errorData?.message
 
-    const error = new ApiError(known || errorData.description, {
+    const known = data && matchKnownError(errorData)
+    const error = new ApiError(known || message, {
       known,
       status: response.status,
-      ...errorData,
     })
     console.error(error)
 
@@ -94,12 +81,14 @@ const processResponse = async <D>(response: Response): Promise<D> => {
 export const get = async <D>(
   accessToken: string,
   endpoint: string,
-  query: Record<string, any>,
+  query?: Record<string, any>,
   headers: Record<string, string> = {}
 ): Promise<D> =>
   processResponse(
     await fetch(
-      ApiPrefix + endpoint + "?" + new URLSearchParams(query).toString(),
+      ApiPrefix +
+        endpoint +
+        (query ? "?" + new URLSearchParams(query).toString() : ""),
       {
         method: "GET",
         headers: {
@@ -150,5 +139,6 @@ export const postAccountForm = async <D>(
         Accept: "application/json",
         ...headers,
       },
-    })
+    }),
+    true
   )

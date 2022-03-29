@@ -1,4 +1,5 @@
 export * from "./ClickableRow"
+export * from "./DevicesPickerModal"
 export * from "./Footer"
 export * from "./Loader"
 export * from "./Modal"

@@ -15,7 +15,7 @@ interface Tab {
     inactive: IconType
     active: IconType
   }
-  href?: string
+  href: string
   startsWith?: string
 }
 
@@ -46,6 +46,7 @@ const unauthTabs: Tab[] = [
       inactive: MdAccountCircle,
       active: MdAccountCircle,
     },
+    href: "/",
     startsWith: "/",
   },
 ]
@@ -67,7 +68,7 @@ export const Footer = () => {
 
         return (
           <div key={label} className="flex-1 flex justify-center items-center">
-            <Link href={href ?? ""}>
+            <Link href={href}>
               <a
                 className={classNames(
                   "flex flex-col justify-center items-center opacity-40",
