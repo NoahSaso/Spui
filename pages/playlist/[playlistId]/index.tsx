@@ -4,10 +4,15 @@ import { useState } from "react"
 import { toast } from "react-toastify"
 import { useRecoilValueLoadable } from "recoil"
 
-import { DevicesPickerModal, Loader, PlaylistTrackRow } from "@/components"
+import {
+  DevicesPickerModal,
+  Header,
+  Loader,
+  PlaylistTrackRow,
+} from "@/components"
 import { useRequireAuthentication } from "@/hooks"
 import { addToQueue } from "@/services/api/tracks"
-import { getPlaylistTracks } from "@/state"
+import { getPlaylistWithTracks, PlaylistWithTracks } from "@/state"
 import { Device } from "@/types"
 
 const PlaylistPage: NextPage = () => {
@@ -16,12 +21,16 @@ const PlaylistPage: NextPage = () => {
   const { isReady, query } = useRouter()
 
   const loadable = useRecoilValueLoadable(
-    getPlaylistTracks(
+    getPlaylistWithTracks(
       isReady && typeof query.playlistId === "string" ? query.playlistId : ""
     )
   )
-  const tracks = loadable.state === "hasValue" ? loadable.contents : undefined
-  const tracksError =
+  const { playlist, tracks } = (loadable.state === "hasValue" &&
+    (loadable.contents as PlaylistWithTracks)) || {
+    playlist: undefined,
+    tracks: undefined,
+  }
+  const error =
     loadable.state === "hasError" ? loadable.contents.message : undefined
 
   const [trackUriPendingDeviceSelection, setTrackUriPendingDeviceSelection] =
@@ -46,28 +55,32 @@ const PlaylistPage: NextPage = () => {
 
   return (
     <>
-      {loadable.state === "loading" ? (
-        <Loader expand />
-      ) : loadable.state === "hasError" ? (
-        <p>{tracksError}</p>
-      ) : null}
+      <Header title={playlist?.name} backPath="/playlists" />
 
-      <div>
-        {tracks?.map((track) => (
-          <PlaylistTrackRow
-            key={track.track.id}
-            track={track}
-            playAfterDeviceSelection={playAfterDeviceSelection}
-          />
-        ))}
+      <div className="overflow-y-auto visible-scrollbar self-stretch my-1">
+        {loadable.state === "loading" ? (
+          <Loader expand />
+        ) : loadable.state === "hasError" ? (
+          <p>{error}</p>
+        ) : null}
+
+        <div>
+          {tracks?.map((track) => (
+            <PlaylistTrackRow
+              key={track.track.id}
+              track={track}
+              playAfterDeviceSelection={playAfterDeviceSelection}
+            />
+          ))}
+        </div>
+
+        <DevicesPickerModal
+          visible={!!trackUriPendingDeviceSelection}
+          hide={() => setTrackUriPendingDeviceSelection(undefined)}
+          isSelected={({ is_active }) => is_active}
+          onPick={onPickDeviceAndPlay}
+        />
       </div>
-
-      <DevicesPickerModal
-        visible={!!trackUriPendingDeviceSelection}
-        hide={() => setTrackUriPendingDeviceSelection(undefined)}
-        isSelected={({ is_active }) => is_active}
-        onPick={onPickDeviceAndPlay}
-      />
     </>
   )
 }

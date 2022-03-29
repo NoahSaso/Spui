@@ -39,6 +39,16 @@ export const getAllPlaylists = selector<Playlist[] | undefined>({
   },
 })
 
+export const getPlaylist = selectorFamily<Playlist | undefined, string>({
+  key: "getPlaylist",
+  get:
+    (playlistId) =>
+    ({ get }) =>
+      playlistId
+        ? get(getAllPlaylists)?.find(({ id }) => id === playlistId)
+        : undefined,
+})
+
 export const getPlaylistTracks = selectorFamily<
   PlaylistTrack[] | undefined,
   string
@@ -72,5 +82,27 @@ export const getPlaylistTracks = selectorFamily<
       } while (pagesLeft)
 
       return tracks
+    },
+})
+
+export interface PlaylistWithTracks {
+  playlist: Playlist
+  tracks: PlaylistTrack[]
+}
+
+export const getPlaylistWithTracks = selectorFamily<
+  PlaylistWithTracks | undefined,
+  string
+>({
+  key: "getPlaylistWithTracks",
+  get:
+    (playlistId) =>
+    ({ get }) => {
+      if (!playlistId) return
+
+      const playlist = get(getPlaylist(playlistId))
+      const tracks = get(getPlaylistTracks(playlistId))
+
+      return playlist && tracks && { playlist, tracks }
     },
 })

@@ -1,6 +1,7 @@
 export * from "./ClickableRow"
 export * from "./DevicesPickerModal"
 export * from "./Footer"
+export * from "./Header"
 export * from "./Loader"
 export * from "./Modal"
 export * from "./PlaylistRow"

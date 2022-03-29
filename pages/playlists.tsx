@@ -1,7 +1,7 @@
 import type { NextPage } from "next"
 import { useRecoilValueLoadable } from "recoil"
 
-import { Loader, PlaylistRow } from "@/components"
+import { Header, Loader, PlaylistRow } from "@/components"
 import { useRequireAuthentication } from "@/hooks"
 import { getAllPlaylists } from "@/state"
 
@@ -16,14 +16,18 @@ const PlaylistsPage: NextPage = () => {
 
   return (
     <>
-      {loadable.state === "loading" ? (
-        <Loader expand />
-      ) : loadable.state === "hasError" ? (
-        <p>{error}</p>
-      ) : null}
-      {playlists?.map((playlist) => (
-        <PlaylistRow key={playlist.id} playlist={playlist} />
-      ))}
+      <Header title="Playlists" />
+
+      <div className="overflow-y-auto visible-scrollbar self-stretch">
+        {loadable.state === "loading" ? (
+          <Loader expand />
+        ) : loadable.state === "hasError" ? (
+          <p>{error}</p>
+        ) : null}
+        {playlists?.map((playlist) => (
+          <PlaylistRow key={playlist.id} playlist={playlist} />
+        ))}
+      </div>
     </>
   )
 }

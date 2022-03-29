@@ -71,7 +71,7 @@ type ClickableRowProps = {
 } & Action
 
 const containerClassName =
-  "h-14 p-2 cursor-pointer hover:bg-hover active:bg-hover w-full flex flex-row justify-start items-stretch gap-4"
+  "w-full h-[4.5rem] p-3 cursor-pointer hover:bg-hover active:bg-hover w-full flex flex-row justify-start items-stretch gap-4"
 
 // Pass onClick to make it a clickable div, and path to make it a local Next Link.
 export const ClickableRow: FunctionComponent<ClickableRowProps> = ({
@@ -93,11 +93,17 @@ export const ClickableRow: FunctionComponent<ClickableRowProps> = ({
   const contained = (
     <>
       {smallImageUrl && (
-        <img src={smallImageUrl} alt="art" className="object-cover" />
+        <img
+          src={smallImageUrl}
+          alt="art"
+          className="object-cover h-full aspect-square"
+        />
       )}
-      <div className="flex-1 flex flex-col justify-center items-start">
-        <p>{title}</p>
-        {!!subtitle && <p className="text-placeholder text-sm">{subtitle}</p>}
+      <div className="flex-1 flex flex-col justify-center items-start overflow-hidden">
+        <p className="w-full truncate">{title}</p>
+        {!!subtitle && (
+          <p className="text-placeholder text-sm w-full truncate">{subtitle}</p>
+        )}
       </div>
       {!!options?.length && (
         <>
@@ -121,17 +127,19 @@ export const ClickableRow: FunctionComponent<ClickableRowProps> = ({
               />
             )}
 
-            <p className="text-center mb-10">{title}</p>
-            {!!subtitle && (
-              <p className="text-center text-placeholder text-sm -mt-9 mb-10 ">
-                {subtitle}
-              </p>
-            )}
+            <div className="w-3/5 self-center">
+              <p className="text-center mb-10">{title}</p>
+              {!!subtitle && (
+                <p className="text-center text-placeholder text-sm -mt-9 mb-10">
+                  {subtitle}
+                </p>
+              )}
 
-            <div className="w-3/5 self-center flex flex-col gap-4">
-              {options.map((option) => (
-                <Option option={option} key={option.label} />
-              ))}
+              <div className="flex flex-col gap-4">
+                {options.map((option) => (
+                  <Option option={option} key={option.label} />
+                ))}
+              </div>
             </div>
           </Modal>
         </>
