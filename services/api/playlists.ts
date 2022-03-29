@@ -1,16 +1,8 @@
 import { Playlist, PlaylistTrack } from "@/types"
 
-import { get as _get } from "./common"
+import { get as _get, ListResponse } from "./common"
 
-export type GetPlaylistsResponse = {
-  href: string
-  items: Playlist[]
-  limit: number
-  next: string | null
-  offset: number
-  previous: string | null
-  total: number
-}
+export type GetPlaylistsResponse = ListResponse<Playlist>
 
 export const get = async (
   accessToken: string,
@@ -23,15 +15,7 @@ export const get = async (
     ...(offset && { offset }),
   })
 
-export type GetPlaylistTracksResponse = {
-  href: string
-  items: PlaylistTrack[]
-  limit: number
-  next: string | null
-  offset: number
-  previous: string | null
-  total: number
-}
+export type GetPlaylistTracksResponse = ListResponse<PlaylistTrack>
 
 export const getTracks = async (
   accessToken: string,

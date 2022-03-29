@@ -1,14 +1,15 @@
-import { FunctionComponent, useEffect } from "react"
+import { FunctionComponent, useEffect, useState } from "react"
 import { IoCheckmark } from "react-icons/io5"
 import { useRecoilValueLoadable, useSetRecoilState } from "recoil"
 
 import { Loader, Modal } from "@/components"
+import { DevicePicker } from "@/services"
 import { devicesIdAtom, getDevices } from "@/state"
 import { Device as DeviceType } from "@/types"
 
 interface DeviceProps {
   device: DeviceType
-  selected: boolean
+  selected?: boolean
   onClick: () => void
 }
 const Device: FunctionComponent<DeviceProps> = ({
@@ -31,26 +32,25 @@ const Device: FunctionComponent<DeviceProps> = ({
   </div>
 )
 
-interface DevicesPickerModalProps {
-  visible: boolean
-  hide: () => void
-  onPick: (device: DeviceType) => void
-  // Show a checkmark next to selected device.
-  isSelected: (device: DeviceType) => boolean
-}
-
-export const DevicesPickerModal: FunctionComponent<DevicesPickerModalProps> = ({
-  visible,
-  hide,
-  onPick,
-  isSelected,
-}) => {
+export const DevicePickerContainer = () => {
   const setDevicesId = useSetRecoilState(devicesIdAtom)
+
+  const [visible, setVisible] = useState(false)
 
   const loadable = useRecoilValueLoadable(getDevices)
   const devices = loadable.state === "hasValue" ? loadable.contents : undefined
   const error =
     loadable.state === "hasError" ? loadable.contents.message : undefined
+
+  const onPick = (device: DeviceType) => {
+    DevicePicker.pickedDevice(device)
+    setVisible(false)
+  }
+
+  // Listen for pick requests until unmounted.
+  useEffect(() => {
+    return DevicePicker.subscribe(() => setVisible(true))
+  }, [])
 
   // Refresh devices every 10 seconds when the modal is open.
   useEffect(() => {
@@ -59,12 +59,15 @@ export const DevicesPickerModal: FunctionComponent<DevicesPickerModalProps> = ({
         () => setDevicesId((id) => id + 1),
         1000 * 10
       )
+      // Update right away.
+      setDevicesId((id) => id + 1)
+
       return () => clearInterval(interval)
     }
   }, [visible, setDevicesId])
 
   return (
-    <Modal visible={visible} hide={hide}>
+    <Modal visible={visible} hide={() => setVisible(false)}>
       <p className="text-center mb-10">Devices</p>
 
       {loadable.state === "loading" ? (
@@ -78,7 +81,6 @@ export const DevicesPickerModal: FunctionComponent<DevicesPickerModalProps> = ({
           <Device
             key={device.id}
             device={device}
-            selected={isSelected(device)}
             onClick={() => onPick(device)}
           />
         ))}

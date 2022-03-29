@@ -1,3 +1,12 @@
+export enum Type {
+  Album = "album",
+  Artist = "artist",
+  Playlist = "playlist",
+  Track = "track",
+  Show = "show",
+  Episode = "episode",
+}
+
 export interface Image {
   url: string
   height: number | null
@@ -37,7 +46,7 @@ export interface Playlist {
     href: string
     total: number
   }
-  type: "playlist"
+  type: Type.Playlist
   uri: string
 }
 
@@ -45,9 +54,12 @@ export interface Artist {
   external_urls: ExternalUrls
   href: string
   id: string
+  images: Image[]
   name: string
-  type: "artist"
+  type: Type.Artist
   uri: string
+  genres: string[]
+  popularity: number
 }
 
 export interface Album {
@@ -62,7 +74,29 @@ export interface Album {
   release_date: string
   release_date_precision: "day" | "month" | "year"
   total_tracks: number
-  type: "album"
+  type: Type.Album
+  uri: string
+}
+
+export interface Track {
+  album: Album
+  artists: Artist[]
+  available_markets: string[]
+  disc_number: number
+  duration_ms: number
+  explicit: boolean
+  external_ids: {
+    isrc: string
+  }
+  external_urls: ExternalUrls
+  href: string
+  id: string
+  is_local: boolean
+  name: string
+  popularity: number
+  preview_url: string | null
+  track_number: number
+  type: Type.Track
   uri: string
 }
 
@@ -70,28 +104,9 @@ export interface PlaylistTrack {
   added_at: string
   added_by: AddedByUser
   is_local: boolean
-  track: {
-    album: Album
-    artists: Artist[]
-    available_markets: string[]
-    disc_number: number
-    duration_ms: number
+  track: Track & {
     episode: false
-    explicit: boolean
-    external_ids: {
-      isrc: string
-    }
-    external_urls: ExternalUrls
-    href: string
-    id: string
-    is_local: boolean
-    name: string
-    popularity: number
-    preview_url: string | null
     track: true
-    track_number: number
-    type: "track"
-    uri: string
   }
   video_thumbnail: {
     url: string | null

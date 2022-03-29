@@ -6,7 +6,7 @@ import { IconType } from "react-icons"
 import { CgPlayList } from "react-icons/cg"
 import { IoSearch } from "react-icons/io5"
 import { MdAccountCircle } from "react-icons/md"
-import { useRecoilValue } from "recoil"
+import { useRecoilValue, useRecoilState } from "recoil"
 
 import { isLoggedInSelector } from "@/state"
 import { colors } from "@/theme"
@@ -19,7 +19,7 @@ export const Footer = () => {
 
   return (
     <div className="h-footer bg-card flex flex-row justify-center items-stretch z-10 flex-none sm:rounded-t-md sm:overflow-hidden">
-      {(isLoggedIn ? authTabs : unauthTabs).map((tab) => (
+      {(!!isLoggedIn ? authTabs : unauthTabs).map((tab) => (
         <Tab
           key={tab.label}
           data={tab}

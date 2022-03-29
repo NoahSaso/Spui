@@ -142,3 +142,13 @@ export const postAccountForm = async <D>(
     }),
     true
   )
+
+export type ListResponse<T> = {
+  href: string
+  items: T[]
+  limit: number
+  next: string | null
+  offset: number
+  previous: string | null
+  total: number
+}

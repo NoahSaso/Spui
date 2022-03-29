@@ -6,7 +6,7 @@ import { FunctionComponent } from "react"
 import { ToastContainer } from "react-toastify"
 import { RecoilRoot } from "recoil"
 
-import { Footer } from "@/components"
+import { DevicePickerContainer, Footer } from "@/components"
 import { useTokenMonitor } from "@/hooks"
 
 const Spui: FunctionComponent<AppProps> = ({ Component, pageProps }) => {
@@ -18,6 +18,8 @@ const Spui: FunctionComponent<AppProps> = ({ Component, pageProps }) => {
       <div className="relative w-full h-full overflow-hidden flex flex-col justify-start items-stretch max-w-lg pt-safe mx-auto sm:px-1">
         <main>
           <Component {...pageProps} />
+
+          <DevicePickerContainer />
         </main>
         <Footer />
       </div>

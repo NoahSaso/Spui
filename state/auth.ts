@@ -39,8 +39,8 @@ export const validAccessTokenOrNull = selector({
 
 // Authentication status depends on the the ability to acquire a new
 // access token at any given point because the user has already
-// authorized. Thus, validate the refresh token and not the access token.
+// authorized. Thus, validate the refresh token AND the access token.
 export const isLoggedInSelector = selector({
   key: "isLoggedIn",
-  get: ({ get }) => !!get(refreshTokenAtom),
+  get: ({ get }) => !!get(refreshTokenAtom) && !!get(validAccessTokenOrNull),
 })

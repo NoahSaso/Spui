@@ -5,28 +5,24 @@ import { useRecoilValue } from "recoil"
 import { validAccessTokenOrNull } from "state/auth"
 
 import { ClickableRow } from "@/components"
+import { DevicePicker } from "@/services"
 import { ApiError, KnownError } from "@/services/api/common"
 import { addToQueue } from "@/services/api/tracks"
-import { PlaylistTrack } from "@/types"
+import { Track } from "@/types"
 
-interface PlaylistTrackRowProps {
-  track: PlaylistTrack
-  // Display device selection modal and play this track once a device is chosen.
-  playAfterDeviceSelection: (trackUri: string) => void
+interface TrackRow {
+  track: Track
 }
 
-export const PlaylistTrackRow: FunctionComponent<PlaylistTrackRowProps> = ({
+export const TrackRow: FunctionComponent<TrackRow> = ({
   track: {
-    track: {
-      uri,
-      href,
-      name,
-      artists,
-      album: { images },
-      external_urls: { spotify },
-    },
+    uri,
+    href,
+    name,
+    artists,
+    album: { images },
+    external_urls: { spotify },
   },
-  playAfterDeviceSelection,
 }) => {
   const accessToken = useRecoilValue(validAccessTokenOrNull)
   const onClick = async () => {
@@ -44,7 +40,13 @@ export const PlaylistTrackRow: FunctionComponent<PlaylistTrackRowProps> = ({
         error instanceof ApiError &&
         error.data.known === KnownError.NoActiveDevice
       ) {
-        playAfterDeviceSelection(uri)
+        DevicePicker.pickDevice(({ id, name }) =>
+          toast.promise(addToQueue(accessToken, uri, id), {
+            pending: `Adding to queue on ${name}...`,
+            success: `Added to queue on ${name} 👍`,
+            error: `Failed to add to queue on ${name} 👎`,
+          })
+        )
       } else {
         toast.error("Failed to add to queue 👎")
       }

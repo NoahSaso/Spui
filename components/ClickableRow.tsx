@@ -68,6 +68,7 @@ type ClickableRowProps = {
   className?: string
   images?: Image[]
   options?: Option[]
+  rightNode?: ReactNode
 } & Action
 
 const containerClassName =
@@ -83,12 +84,13 @@ export const ClickableRow: FunctionComponent<ClickableRowProps> = ({
   onClick,
   path,
   href,
+  rightNode,
 }) => {
   const [modalVisible, setModalVisible] = useState(false)
 
-  const largeImageUrl = images?.[0].url
+  const largeImageUrl = images?.[0]?.url
   // Last image in images list is smallest.
-  const smallImageUrl = images?.slice(-1)[0].url
+  const smallImageUrl = images?.slice(-1)[0]?.url
 
   const contained = (
     <>
@@ -105,10 +107,10 @@ export const ClickableRow: FunctionComponent<ClickableRowProps> = ({
           <p className="text-placeholder text-sm w-full truncate">{subtitle}</p>
         )}
       </div>
-      {!!options?.length && (
+      {!!options?.length ? (
         <>
           <div
-            className="h-full aspect-square flex justify-center items-center hover:opacity-70 active:opacity-70"
+            className="h-full aspect-square flex flex-row justify-end items-center hover:opacity-70 active:opacity-70"
             onClick={(e) => {
               // Don't click on parent row.
               e.stopPropagation()
@@ -143,6 +145,8 @@ export const ClickableRow: FunctionComponent<ClickableRowProps> = ({
             </div>
           </Modal>
         </>
+      ) : (
+        rightNode
       )}
     </>
   )
