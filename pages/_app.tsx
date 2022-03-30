@@ -3,11 +3,14 @@ import "react-toastify/dist/ReactToastify.min.css"
 
 import type { AppProps } from "next/app"
 import { FunctionComponent } from "react"
+import { QueryClient, QueryClientProvider } from "react-query"
 import { ToastContainer } from "react-toastify"
 import { RecoilRoot } from "recoil"
 
 import { DevicePickerContainer, Footer } from "@/components"
 import { useTokenMonitor } from "@/hooks"
+
+const queryClient = new QueryClient()
 
 const Spui: FunctionComponent<AppProps> = ({ Component, pageProps }) => {
   // Refresh access token automatically when it gets close to expiring.
@@ -30,7 +33,9 @@ const Spui: FunctionComponent<AppProps> = ({ Component, pageProps }) => {
 const App: FunctionComponent<AppProps> = (props) => (
   <>
     <RecoilRoot>
-      <Spui {...props} />
+      <QueryClientProvider client={queryClient}>
+        <Spui {...props} />
+      </QueryClientProvider>
     </RecoilRoot>
 
     <ToastContainer

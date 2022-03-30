@@ -3,7 +3,7 @@ import { IoChatbubbleOutline, IoCopyOutline } from "react-icons/io5"
 import { toast } from "react-toastify"
 import { useRecoilValueLoadable } from "recoil"
 
-import { ClickableRow, Loader } from "@/components"
+import { ClickableRow, LoaderRow } from "@/components"
 import { getPlaylist } from "@/state"
 import { Playlist } from "@/types"
 
@@ -19,12 +19,7 @@ export const PlaylistRow: FunctionComponent<PlaylistRowProps> = ({
   const loadable = useRecoilValueLoadable(getPlaylist(_playlist ? "" : id))
   const playlist = loadable.state === "hasValue" ? loadable.contents : undefined
 
-  if (!playlist && !_playlist)
-    return (
-      <div className="flex flex-row justify-center items-center h-row">
-        <Loader size={32} />
-      </div>
-    )
+  if (!playlist && !_playlist) return <LoaderRow />
 
   const {
     name,
@@ -36,7 +31,7 @@ export const PlaylistRow: FunctionComponent<PlaylistRowProps> = ({
   return (
     <ClickableRow
       title={name}
-      subtitle={`${totalTracks} tracks`}
+      subtitle={`${totalTracks} track${totalTracks === 1 ? "" : "s"}`}
       path={`/playlist/${id}`}
       images={images}
       options={[

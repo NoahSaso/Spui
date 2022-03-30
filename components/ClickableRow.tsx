@@ -54,7 +54,7 @@ type ClickableRowProps = {
 } & Action
 
 const containedClassName =
-  "p-3 flex-1 flex flex-row justify-start items-stretch gap-4"
+  "p-3 flex-1 flex flex-row justify-start items-stretch gap-4 overflow-hidden"
 
 // Pass onClick to make it a clickable div, and path to make it a local Next Link.
 export const ClickableRow: FunctionComponent<ClickableRowProps> = ({
