@@ -122,14 +122,18 @@ export const ClickableRow: FunctionComponent<ClickableRowProps> = ({
       {!!options?.length ? (
         <>
           <div
-            className="h-full aspect-square flex flex-row justify-end items-center hover:opacity-70 active:opacity-70"
+            className="h-full aspect-square flex flex-row justify-end items-center"
             onClick={(e) => {
               // Don't click on parent row.
               e.stopPropagation()
+              e.preventDefault()
               setModalVisible(true)
             }}
           >
-            <IoEllipsisHorizontal size={22} />
+            <IoEllipsisHorizontal
+              className="hover:opacity-70 active:opacity-70"
+              size={22}
+            />
           </div>
 
           <Modal visible={modalVisible} hide={() => setModalVisible(false)}>
