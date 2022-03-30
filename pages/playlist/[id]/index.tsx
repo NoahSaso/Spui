@@ -23,7 +23,7 @@ const PlaylistPage: NextPage = () => {
 
   return (
     <>
-      <Header title={playlist?.name} backPath="/playlists" />
+      <Header title={playlist?.name} />
 
       <div className="flex-1 overflow-y-auto visible-scrollbar self-stretch my-1 flex flex-col items-stretch">
         {loadable.state === "loading" ? (

@@ -87,12 +87,12 @@ export const TrackRow: FunctionComponent<TrackRow> = ({
         {
           icon: <FiDisc size={20} />,
           label: `Go to ${albumName}`,
-          href: `/album/${albumId}`,
+          path: `/album/${albumId}`,
         },
         ...artists.map(({ id, name }) => ({
           icon: <IoPerson size={20} />,
           label: `Go to ${name}`,
-          href: `/artist/${id}`,
+          path: `/artist/${id}`,
         })),
       ]}
     />

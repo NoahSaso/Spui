@@ -33,7 +33,7 @@ const SearchPage: NextPage = () => {
 
   return (
     <>
-      <Header>
+      <Header showBack={false}>
         <input
           type="text"
           placeholder="Search..."
