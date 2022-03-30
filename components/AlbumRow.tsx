@@ -28,7 +28,7 @@ export const AlbumRow: FunctionComponent<AlbumRowProps> = ({
       {
         icon: <IoChatbubbleOutline size={20} />,
         label: "Share via SMS",
-        href: `sms:?body=${encodeURIComponent(href)}`,
+        href: `sms:&body=${encodeURIComponent(href)}`,
       },
       {
         icon: <IoCopyOutline size={20} />,
