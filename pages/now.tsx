@@ -25,7 +25,7 @@ const NowPage: NextPage = () => {
             <ContextRow context={context} />
 
             <Link href={`/album/${track.album.id}`}>
-              <a className="mt-10 block w-[44%] aspect-square">
+              <a className="mt-10 block w-2/3 aspect-square">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={track.album.images[0].url}

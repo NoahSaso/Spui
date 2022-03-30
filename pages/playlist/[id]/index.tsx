@@ -37,7 +37,7 @@ const PlaylistPage: NextPage = () => {
           <img
             src={playlist.images[0].url}
             alt="art"
-            className="my-4 self-center w-[44%] aspect-square object-cover"
+            className="my-4 self-center w-2/3 aspect-square object-cover"
           />
         )}
 
