@@ -13,11 +13,12 @@ import { colors } from "@/theme"
 import { Track } from "@/types"
 
 interface TrackRow {
-  track: Track
+  _track: Track
 }
 
+// TODO: Allow to take `id` like the rest of the rows.
 export const TrackRow: FunctionComponent<TrackRow> = ({
-  track: {
+  _track: {
     id,
     uri,
     name,

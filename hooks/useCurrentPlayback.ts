@@ -8,6 +8,7 @@ export const useCurrentPlayback = () => {
   const loadable = useRecoilValueLoadable(getCurrentPlayback)
   const setCurrentPlaybackId = useSetRecoilState(currentPlaybackIdAtom)
   const [cachedState, setCachedState] = useState<PlaybackState | false>()
+  const [error, setError] = useState<string>()
 
   const updateCurrentPlayback = useCallback(
     () => setCurrentPlaybackId((id) => id + 1),
@@ -16,11 +17,18 @@ export const useCurrentPlayback = () => {
 
   // Cache and update only once ready so it doesn't blink loading.
   useEffect(() => {
-    if (loadable.state === "hasValue") setCachedState(loadable.contents)
-  }, [loadable])
+    if (loadable.state === "hasValue") {
+      setCachedState(loadable.contents)
+      setError(undefined)
+    } else if (loadable.state === "hasError") {
+      setCachedState(undefined)
+      setError(loadable.contents)
+    }
+  }, [loadable, setCachedState, setError])
 
   return {
     currentPlayback: cachedState,
     updateCurrentPlayback,
+    error,
   }
 }

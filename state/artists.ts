@@ -4,7 +4,7 @@ import { Artists } from "@/services/api"
 import { validAccessTokenOrNull } from "@/state"
 import { Album, Artist, Track } from "@/types"
 
-const getArtist = selectorFamily<Artist | undefined, string>({
+export const getArtist = selectorFamily<Artist | undefined, string>({
   key: "getArtist",
   get:
     (artistId) =>

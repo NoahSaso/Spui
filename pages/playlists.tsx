@@ -25,7 +25,7 @@ const PlaylistsPage: NextPage = () => {
           <p>{error}</p>
         ) : null}
         {playlists?.map((playlist) => (
-          <PlaylistRow key={playlist.id} playlist={playlist} />
+          <PlaylistRow key={playlist.id} id={playlist.id} />
         ))}
       </div>
     </>

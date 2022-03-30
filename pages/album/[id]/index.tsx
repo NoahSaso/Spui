@@ -30,11 +30,9 @@ const AlbumPage: NextPage = () => {
           <p>{error}</p>
         ) : null}
 
-        <div>
-          {tracks?.map((track) => (
-            <TrackRow key={track.id} track={track} />
-          ))}
-        </div>
+        {tracks?.map((track) => (
+          <TrackRow key={track.id} _track={track} />
+        ))}
       </div>
     </>
   )

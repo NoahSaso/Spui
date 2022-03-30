@@ -55,23 +55,20 @@ const SearchPage: NextPage = () => {
             <SearchCategory
               title="Tracks"
               items={response.tracks.items}
-              render={(track) => <TrackRow key={track.id} track={track} />}
+              render={(track) => <TrackRow key={track.id} _track={track} />}
             />
             <SearchCategory
               title="Artists"
               items={response.artists.items}
-              render={(artist) => <ArtistRow key={artist.id} artist={artist} />}
+              render={(artist) => <ArtistRow key={artist.id} id={artist.id} />}
             />
             <SearchCategory
               title="Albums"
               items={response.albums.items}
-              render={(album) => <AlbumRow key={album.id} album={album} />}
+              render={(album) => <AlbumRow key={album.id} id={album.id} />}
             />
           </>
         )}
-        {/* {playlists?.map((playlist) => (
-          <PlaylistRow key={playlist.id} playlist={playlist} />
-        ))} */}
       </div>
     </>
   )

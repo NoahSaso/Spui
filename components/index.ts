@@ -1,6 +1,7 @@
 export * from "./AlbumRow"
 export * from "./ArtistRow"
 export * from "./ClickableRow"
+export * from "./ContextRow"
 export * from "./DevicePickerContainer"
 export * from "./Footer"
 export * from "./Header"

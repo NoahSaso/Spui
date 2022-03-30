@@ -7,6 +7,8 @@ module.exports = {
     hover: "#333333",
     placeholder: "#666666",
 
+    secondary: "#888888",
+
     spotify: "#1db954",
   },
 }

@@ -17,7 +17,6 @@ import { Loader } from "@/components"
 import { useCurrentPlayback } from "@/hooks"
 import { isLoggedInSelector } from "@/state"
 import { colors } from "@/theme"
-import { pathForItemWithUri } from "@/utils"
 
 export const Footer = () => {
   const { pathname } = useRouter()
@@ -104,7 +103,7 @@ const NowPlayingTab: FunctionComponent<TabProps> = (props) => {
 
   return (
     // If something is playing, set isActive to true so we don't dim it.
-    <Tab data={{ href: pathForItemWithUri(currentPlayback.context) }} isActive>
+    <Tab data={{ href: props.data.href }} isActive>
       {currentPlayback.item.album.images.length > 0 ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img

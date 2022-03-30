@@ -34,7 +34,7 @@ const PlaylistPage: NextPage = () => {
 
         <div>
           {tracks?.map(({ track }) => (
-            <TrackRow key={track.id} track={track} />
+            <TrackRow key={track.id} _track={track} />
           ))}
         </div>
       </div>
