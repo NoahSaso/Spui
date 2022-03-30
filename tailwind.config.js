@@ -22,7 +22,7 @@ module.exports = {
     },
     extend: {
       height: {
-        footer: "4rem",
+        footer: "5rem",
       },
     },
   },

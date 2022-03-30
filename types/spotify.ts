@@ -122,3 +122,59 @@ export interface Device {
   type: string
   volume_percent: number
 }
+
+export enum RepeatState {
+  Off = "off",
+  Track = "track",
+  Context = "context",
+}
+
+export enum ShuffleState {
+  Off = "off",
+  On = "on",
+}
+
+export enum ContextType {
+  Artist = "artist",
+  Playlist = "playlist",
+  Album = "album",
+  Show = "show",
+}
+
+export interface Context {
+  type: ContextType
+  href: string
+  external_urls: ExternalUrls
+  uri: string
+}
+
+export enum CurrentlyPlayingType {
+  Track = "track",
+  Episode = "episode",
+  Ad = "ad",
+  Unknown = "unknown",
+}
+
+export interface PlaybackState {
+  device: Device
+  repeat_state: RepeatState
+  shuffle_state: ShuffleState
+  context: Context
+  timestamp: number
+  progress_ms: number
+  is_playing: boolean
+  item: Track
+  currently_playing_type: CurrentlyPlayingType
+  actions: {
+    interrupting_playback?: boolean
+    pausing?: boolean
+    resuming?: boolean
+    seeking?: boolean
+    skipping_next?: boolean
+    skipping_prev?: boolean
+    toggling_repeat_context?: boolean
+    toggling_shuffle?: boolean
+    toggling_repeat_track?: boolean
+    transferring_playback?: boolean
+  }
+}

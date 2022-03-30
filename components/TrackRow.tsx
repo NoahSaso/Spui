@@ -5,9 +5,11 @@ import { useRecoilValue } from "recoil"
 import { validAccessTokenOrNull } from "state/auth"
 
 import { ClickableRow } from "@/components"
+import { useCurrentPlayback } from "@/hooks"
 import { DevicePicker } from "@/services"
+import { Player } from "@/services/api"
 import { ApiError, KnownError } from "@/services/api/common"
-import { addToQueue } from "@/services/api/tracks"
+import { colors } from "@/theme"
 import { Track } from "@/types"
 
 interface TrackRow {
@@ -16,6 +18,7 @@ interface TrackRow {
 
 export const TrackRow: FunctionComponent<TrackRow> = ({
   track: {
+    id,
     uri,
     href,
     name,
@@ -31,7 +34,7 @@ export const TrackRow: FunctionComponent<TrackRow> = ({
     // Detect no device error and prompt for selection if possible.
     // Otherwise just error normally.
     try {
-      await toast.promise(addToQueue(accessToken, uri), {
+      await toast.promise(Player.addToQueue(accessToken, uri), {
         pending: "Adding to queue...",
         success: "Added to queue 👍",
       })
@@ -41,7 +44,7 @@ export const TrackRow: FunctionComponent<TrackRow> = ({
         error.data.known === KnownError.NoActiveDevice
       ) {
         DevicePicker.pickDevice(({ id, name }) =>
-          toast.promise(addToQueue(accessToken, uri, id), {
+          toast.promise(Player.addToQueue(accessToken, uri, id), {
             pending: `Adding to queue on ${name}...`,
             success: `Added to queue on ${name} 👍`,
             error: `Failed to add to queue on ${name} 👎`,
@@ -53,10 +56,17 @@ export const TrackRow: FunctionComponent<TrackRow> = ({
     }
   }
 
+  const { currentPlayback } = useCurrentPlayback()
+
   return (
     <ClickableRow
       title={name}
       subtitle={artists.map((artist) => artist.name).join(" • ")}
+      textColor={
+        currentPlayback && currentPlayback.item.id === id
+          ? colors.spotify
+          : undefined
+      }
       images={images}
       onClick={onClick}
       options={[

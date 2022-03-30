@@ -125,6 +125,31 @@ export const post = async <D>(
     )
   )
 
+export const put = async <D>(
+  accessToken: string,
+  endpoint: string,
+  query?: Record<string, any>,
+  body?: Record<string, any>,
+  headers: Record<string, string> = {}
+): Promise<D> =>
+  processResponse(
+    await fetch(
+      ApiPrefix +
+        endpoint +
+        (query ? "?" + new URLSearchParams(query).toString() : ""),
+      {
+        method: "PUT",
+        ...(body && { body: new URLSearchParams(body) }),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          ...headers,
+        },
+      }
+    )
+  )
+
 export const postAccountForm = async <D>(
   endpoint: string,
   body: Record<string, any>,

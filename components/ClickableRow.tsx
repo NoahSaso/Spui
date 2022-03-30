@@ -69,6 +69,7 @@ type ClickableRowProps = {
   images?: Image[]
   options?: Option[]
   rightNode?: ReactNode
+  textColor?: string
 } & Action
 
 const containerClassName =
@@ -85,6 +86,7 @@ export const ClickableRow: FunctionComponent<ClickableRowProps> = ({
   path,
   href,
   rightNode,
+  textColor,
 }) => {
   const [modalVisible, setModalVisible] = useState(false)
 
@@ -102,9 +104,19 @@ export const ClickableRow: FunctionComponent<ClickableRowProps> = ({
         />
       )}
       <div className="flex-1 flex flex-col justify-center items-start overflow-hidden">
-        <p className="w-full truncate">{title}</p>
+        <p
+          className="w-full truncate"
+          style={textColor ? { color: textColor } : undefined}
+        >
+          {title}
+        </p>
         {!!subtitle && (
-          <p className="text-placeholder text-sm w-full truncate">{subtitle}</p>
+          <p
+            className="text-placeholder text-sm w-full truncate"
+            style={textColor ? { color: textColor } : undefined}
+          >
+            {subtitle}
+          </p>
         )}
       </div>
       {!!options?.length ? (

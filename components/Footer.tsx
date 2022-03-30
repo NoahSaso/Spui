@@ -1,15 +1,23 @@
 import classNames from "classnames"
 import Link from "next/link"
 import { useRouter } from "next/router"
-import { FunctionComponent } from "react"
+import {
+  ComponentType,
+  FunctionComponent,
+  PropsWithChildren,
+  useEffect,
+} from "react"
 import { IconType } from "react-icons"
-import { CgPlayList } from "react-icons/cg"
+import { CgLoadbarSound, CgPlayList } from "react-icons/cg"
 import { IoSearch } from "react-icons/io5"
 import { MdAccountCircle } from "react-icons/md"
 import { useRecoilValue } from "recoil"
 
+import { Loader } from "@/components"
+import { useCurrentPlayback } from "@/hooks"
 import { isLoggedInSelector } from "@/state"
 import { colors } from "@/theme"
+import { pathForItemWithUri } from "@/utils"
 
 export const Footer = () => {
   const { pathname } = useRouter()
@@ -19,26 +27,98 @@ export const Footer = () => {
 
   return (
     <div className="h-footer bg-card flex flex-row justify-center items-stretch z-10 flex-none sm:rounded-t-md sm:overflow-hidden">
-      {(!!isLoggedIn ? authTabs : unauthTabs).map((tab) => (
-        <Tab
-          key={tab.label}
-          data={tab}
-          isActive={
-            tab.startsWith
-              ? rootPath.startsWith(tab.startsWith)
-              : rootPath === tab.href
-          }
-        />
-      ))}
+      {(!!isLoggedIn ? authTabs : unauthTabs).map((tab) => {
+        const TabComponent = tab.TabComponent ?? Tab
+        return (
+          <TabComponent
+            key={tab.label}
+            data={tab}
+            isActive={
+              tab.startsWith
+                ? rootPath.startsWith(tab.startsWith)
+                : rootPath === tab.href
+            }
+          />
+        )
+      })}
     </div>
   )
 }
 
+type TabProps = PropsWithChildren<{
+  data: TabData
+  isActive: boolean
+}>
+
 interface TabData {
-  label: string
-  Icon: IconType
   href: string
+  label?: string
+  Icon?: IconType
   startsWith?: string
+  TabComponent?: ComponentType<TabProps>
+}
+
+const Tab: FunctionComponent<TabProps> = ({
+  data: { label, Icon, href },
+  isActive,
+  children,
+}) => (
+  <Link href={href}>
+    <a
+      className={classNames(
+        "flex-1 flex flex-col justify-center items-center",
+        {
+          "opacity-40": !isActive,
+          "opacity-100": isActive,
+        }
+      )}
+    >
+      {Icon && <Icon color={colors.light} size={38} />}
+      {children}
+      {!!label && <p className="text-xs">{label}</p>}
+    </a>
+  </Link>
+)
+
+const NowPlayingTab: FunctionComponent<TabProps> = (props) => {
+  const { currentPlayback, updateCurrentPlayback } = useCurrentPlayback()
+
+  // Refresh playback every 5 seconds.
+  useEffect(() => {
+    const interval = setInterval(() => updateCurrentPlayback(), 1000 * 5)
+    // Refresh immediately.
+    updateCurrentPlayback()
+
+    return () => clearInterval(interval)
+  }, [updateCurrentPlayback])
+
+  if (currentPlayback === undefined) {
+    return (
+      <Tab {...props} data={{ ...props.data, Icon: undefined }}>
+        <Loader size={38} />
+      </Tab>
+    )
+  }
+
+  if (!currentPlayback) return <Tab {...props} />
+
+  return (
+    // If something is playing, set isActive to true so we don't dim it.
+    <Tab data={{ href: pathForItemWithUri(currentPlayback.context) }} isActive>
+      {currentPlayback.item.album.images.length > 0 ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={currentPlayback.item.album.images.slice(-1)[0]?.url}
+          alt="art"
+          className="w-7 h-7 object-cover"
+        />
+      ) : (
+        <CgLoadbarSound color={colors.light} size={38} />
+      )}
+      <p className="text-xs mt-1">{currentPlayback.item.name}</p>
+      <p className="text-xs text-spotify">{currentPlayback.device.name}</p>
+    </Tab>
+  )
 }
 
 const unauthTabs: TabData[] = [
@@ -62,29 +142,10 @@ const authTabs: TabData[] = [
     href: "/playlists",
     startsWith: "/playlist",
   },
+  {
+    label: "Now Playing",
+    Icon: CgLoadbarSound,
+    href: "/now",
+    TabComponent: NowPlayingTab,
+  },
 ]
-
-interface TabProps {
-  data: TabData
-  isActive: boolean
-}
-
-const Tab: FunctionComponent<TabProps> = ({
-  data: { label, Icon, href },
-  isActive,
-}) => (
-  <Link href={href}>
-    <a
-      className={classNames(
-        "flex-1 flex flex-col justify-center items-center",
-        {
-          "opacity-40": !isActive,
-          "opacity-100": isActive,
-        }
-      )}
-    >
-      <Icon color={colors.light} size={26} />
-      <p className="text-xs">{label}</p>
-    </a>
-  </Link>
-)
