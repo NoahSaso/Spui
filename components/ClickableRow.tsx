@@ -127,7 +127,7 @@ export const ClickableRow: FunctionComponent<ClickableRowProps> = ({
       {!!options?.length ? (
         <>
           <div
-            className="h-full aspect-square flex flex-row justify-center items-center p-3 hover:opacity-70 active:opacity-70"
+            className="h-full aspect-square flex flex-row justify-center items-center hover:opacity-70 active:opacity-70"
             onClick={() => setModalVisible(true)}
           >
             <IoEllipsisHorizontal size={22} />
