@@ -12,7 +12,6 @@ interface ArtistRowProps {
 export const ArtistRow: FunctionComponent<ArtistRowProps> = ({
   artist: {
     id,
-    href,
     name,
     images,
     external_urls: { spotify },
@@ -26,7 +25,7 @@ export const ArtistRow: FunctionComponent<ArtistRowProps> = ({
       {
         icon: <IoChatbubbleOutline size={20} />,
         label: "Share via SMS",
-        href: `sms:&body=${encodeURIComponent(href)}`,
+        href: `sms:&body=${encodeURIComponent(spotify)}`,
       },
       {
         icon: <IoCopyOutline size={20} />,

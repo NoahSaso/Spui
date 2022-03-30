@@ -12,7 +12,6 @@ interface AlbumRowProps {
 export const AlbumRow: FunctionComponent<AlbumRowProps> = ({
   album: {
     id,
-    href,
     name,
     images,
     total_tracks,
@@ -28,7 +27,7 @@ export const AlbumRow: FunctionComponent<AlbumRowProps> = ({
       {
         icon: <IoChatbubbleOutline size={20} />,
         label: "Share via SMS",
-        href: `sms:&body=${encodeURIComponent(href)}`,
+        href: `sms:&body=${encodeURIComponent(spotify)}`,
       },
       {
         icon: <IoCopyOutline size={20} />,

@@ -12,7 +12,6 @@ interface PlaylistRowProps {
 export const PlaylistRow: FunctionComponent<PlaylistRowProps> = ({
   playlist: {
     id,
-    href,
     name,
     images,
     tracks: { total: totalTracks },
@@ -28,7 +27,7 @@ export const PlaylistRow: FunctionComponent<PlaylistRowProps> = ({
       {
         icon: <IoChatbubbleOutline size={20} />,
         label: "Share via SMS",
-        href: `sms:&body=${encodeURIComponent(href)}`,
+        href: `sms:&body=${encodeURIComponent(spotify)}`,
       },
       {
         icon: <IoCopyOutline size={20} />,

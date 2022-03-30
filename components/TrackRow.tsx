@@ -20,7 +20,6 @@ export const TrackRow: FunctionComponent<TrackRow> = ({
   track: {
     id,
     uri,
-    href,
     name,
     artists,
     album: { images },
@@ -73,7 +72,7 @@ export const TrackRow: FunctionComponent<TrackRow> = ({
         {
           icon: <IoChatbubbleOutline size={20} />,
           label: "Share via SMS",
-          href: `sms:&body=${encodeURIComponent(href)}`,
+          href: `sms:&body=${encodeURIComponent(spotify)}`,
         },
         {
           icon: <IoCopyOutline size={20} />,
