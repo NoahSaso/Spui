@@ -27,10 +27,12 @@ export const SearchCategory = <T extends unknown>({
         subtitle={`${items.length} found`}
         onClick={() => setOpen(!open)}
         rightNode={
-          <RightIcon
-            size={22}
-            className="h-full flex justify-center items-center"
-          />
+          <div className="h-full aspect-square flex flex-row justify-center items-center p-3">
+            <RightIcon
+              size={22}
+              className="h-full flex justify-center items-center"
+            />
+          </div>
         }
       />
 

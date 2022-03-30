@@ -21,24 +21,14 @@ export const Modal: FunctionComponent<ModalProps> = ({
         "opacity-100": visible,
       }
     )}
-    onClick={
-      hide
-        ? (e) => {
-            e.stopPropagation()
-            e.target === e.currentTarget && hide()
-          }
-        : undefined
-    }
+    onClick={hide ? (e) => e.target === e.currentTarget && hide() : undefined}
   >
     <div className="flex flex-col justify-start items-stretch relative max-h-[90vh] overflow-y-auto cursor-auto bg-dark py-10">
       {children}
 
       {!!hide && (
         <button
-          onClick={(e) => {
-            e.stopPropagation()
-            hide()
-          }}
+          onClick={() => hide()}
           className="mt-14 opacity-80 hover:opacity-60 active:opacity-60"
         >
           Close

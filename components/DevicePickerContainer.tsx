@@ -19,10 +19,7 @@ const Device: FunctionComponent<DeviceProps> = ({
 }) => (
   <div
     className="w-full flex flex-row justify-start items-center gap-3 cursor-pointer hover:opacity-70 active:opacity-70 transition"
-    onClick={(e) => {
-      e.preventDefault()
-      onClick()
-    }}
+    onClick={() => onClick()}
   >
     <div className="flex flex-col justify-center items-start gap-2">
       <p>{name}</p>

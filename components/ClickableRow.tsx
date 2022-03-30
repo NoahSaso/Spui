@@ -29,34 +29,15 @@ const Option: FunctionComponent<OptionProps> = ({
   )
 
   return onClick ? (
-    <div
-      className={optionClassName}
-      onClick={(e) => {
-        e.preventDefault()
-        onClick()
-      }}
-    >
+    <div className={optionClassName} onClick={() => onClick()}>
       {contained}
     </div>
   ) : path ? (
     <Link href={path}>
-      <a
-        className={optionClassName}
-        onClick={(e) => {
-          e.stopPropagation()
-        }}
-      >
-        {contained}
-      </a>
+      <a className={optionClassName}>{contained}</a>
     </Link>
   ) : href ? (
-    <a
-      className={optionClassName}
-      href={href}
-      onClick={(e) => {
-        e.stopPropagation()
-      }}
-    >
+    <a className={optionClassName} href={href}>
       {contained}
     </a>
   ) : null
@@ -73,7 +54,7 @@ type ClickableRowProps = {
 } & Action
 
 const containerClassName =
-  "w-full h-[4.5rem] p-3 cursor-pointer hover:bg-hover active:bg-hover w-full flex flex-row justify-start items-stretch gap-4"
+  "p-3 flex-1 flex flex-row justify-start items-stretch gap-4"
 
 // Pass onClick to make it a clickable div, and path to make it a local Next Link.
 export const ClickableRow: FunctionComponent<ClickableRowProps> = ({
@@ -119,21 +100,37 @@ export const ClickableRow: FunctionComponent<ClickableRowProps> = ({
           </p>
         )}
       </div>
+    </>
+  )
+
+  return (
+    <div className="w-full h-[4.5rem] cursor-pointer hover:bg-hover active:bg-hover flex flex-row justify-start items-stretch">
+      {onClick ? (
+        <div
+          className={classNames(containerClassName, className)}
+          onClick={onClick}
+        >
+          {contained}
+        </div>
+      ) : path ? (
+        <Link href={path}>
+          <a className={classNames(containerClassName, className)}>
+            {contained}
+          </a>
+        </Link>
+      ) : href ? (
+        <a href={href} className={classNames(containerClassName, className)}>
+          {contained}
+        </a>
+      ) : null}
+
       {!!options?.length ? (
         <>
           <div
-            className="h-full aspect-square flex flex-row justify-end items-center"
-            onClick={(e) => {
-              // Don't click on parent row.
-              e.stopPropagation()
-              e.preventDefault()
-              setModalVisible(true)
-            }}
+            className="h-full aspect-square flex flex-row justify-center items-center p-3 hover:opacity-70 active:opacity-70"
+            onClick={() => setModalVisible(true)}
           >
-            <IoEllipsisHorizontal
-              className="hover:opacity-70 active:opacity-70"
-              size={22}
-            />
+            <IoEllipsisHorizontal size={22} />
           </div>
 
           <Modal visible={modalVisible} hide={() => setModalVisible(false)}>
@@ -164,23 +161,6 @@ export const ClickableRow: FunctionComponent<ClickableRowProps> = ({
       ) : (
         rightNode
       )}
-    </>
-  )
-
-  return onClick ? (
-    <div
-      className={classNames(containerClassName, className)}
-      onClick={onClick}
-    >
-      {contained}
     </div>
-  ) : path ? (
-    <Link href={path}>
-      <a className={classNames(containerClassName, className)}>{contained}</a>
-    </Link>
-  ) : href ? (
-    <a href={href} className={classNames(containerClassName, className)}>
-      {contained}
-    </a>
-  ) : null
+  )
 }
