@@ -2,7 +2,7 @@ import type { NextPage } from "next"
 import { useRouter } from "next/router"
 import { useRecoilValueLoadable } from "recoil"
 
-import { Header, Loader, TrackRow } from "@/components"
+import { Header, LargeImage, Loader, TrackRow } from "@/components"
 import { useRequireAuthentication } from "@/hooks"
 import { getAlbumWithTracks } from "@/state"
 
@@ -23,12 +23,20 @@ const AlbumPage: NextPage = () => {
     <>
       <Header title={album?.name} />
 
-      <div className="flex-1 overflow-y-auto visible-scrollbar self-stretch my-1">
+      <div className="flex-1 overflow-y-auto visible-scrollbar self-stretch my-1 flex flex-col items-stretch">
         {loadable.state === "loading" ? (
           <Loader expand />
         ) : loadable.state === "hasError" ? (
           <p>{error}</p>
         ) : null}
+
+        {album && album.images.length > 0 && (
+          <LargeImage
+            images={album.images}
+            alt={`${album.name} cover art`}
+            className="my-4 self-center"
+          />
+        )}
 
         {tracks?.map((track) => (
           <TrackRow key={track.id} _track={track} />

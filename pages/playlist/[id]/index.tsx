@@ -2,7 +2,7 @@ import type { NextPage } from "next"
 import { useRouter } from "next/router"
 import { useRecoilValueLoadable } from "recoil"
 
-import { Header, Loader, TrackRow } from "@/components"
+import { Header, LargeImage, Loader, TrackRow } from "@/components"
 import { useRequireAuthentication } from "@/hooks"
 import { getPlaylistWithTracks } from "@/state"
 
@@ -33,11 +33,10 @@ const PlaylistPage: NextPage = () => {
         ) : null}
 
         {playlist && playlist.images.length > 0 && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={playlist.images[0].url}
-            alt="art"
-            className="my-4 self-center w-2/3 aspect-square object-cover"
+          <LargeImage
+            images={playlist.images}
+            alt={`${playlist.name} cover art`}
+            className="my-4 self-center"
           />
         )}
 

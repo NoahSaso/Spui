@@ -1,14 +1,15 @@
 import { FunctionComponent } from "react"
-import { IoChatbubbleOutline, IoCopyOutline } from "react-icons/io5"
+import { FiDisc } from "react-icons/fi"
+import { IoChatbubbleOutline, IoCopyOutline, IoPerson } from "react-icons/io5"
 import { toast } from "react-toastify"
 import { useRecoilValue } from "recoil"
-import { validAccessTokenOrNull } from "state/auth"
 
 import { ClickableRow } from "@/components"
 import { useCurrentPlayback } from "@/hooks"
 import { DevicePicker } from "@/services"
 import { Player } from "@/services/api"
 import { ApiError, KnownError } from "@/services/api/common"
+import { validAccessTokenOrNull } from "@/state"
 import { colors } from "@/theme"
 import { Track } from "@/types"
 
@@ -23,7 +24,7 @@ export const TrackRow: FunctionComponent<TrackRow> = ({
     uri,
     name,
     artists,
-    album: { images },
+    album: { id: albumId, name: albumName, images },
     external_urls: { spotify },
   },
 }) => {
@@ -83,6 +84,16 @@ export const TrackRow: FunctionComponent<TrackRow> = ({
             toast.success("Copied to clipboard 📋")
           },
         },
+        {
+          icon: <FiDisc size={20} />,
+          label: `Go to ${albumName}`,
+          href: `/album/${albumId}`,
+        },
+        ...artists.map(({ id, name }) => ({
+          icon: <IoPerson size={20} />,
+          label: `Go to ${name}`,
+          href: `/artist/${id}`,
+        })),
       ]}
     />
   )

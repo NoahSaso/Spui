@@ -19,7 +19,12 @@ export const PlaylistRow: FunctionComponent<PlaylistRowProps> = ({
   const loadable = useRecoilValueLoadable(getPlaylist(_playlist ? "" : id))
   const playlist = loadable.state === "hasValue" ? loadable.contents : undefined
 
-  if (!playlist && !_playlist) return <Loader size={32} />
+  if (!playlist && !_playlist)
+    return (
+      <div className="flex flex-row justify-center items-center h-row">
+        <Loader size={32} />
+      </div>
+    )
 
   const {
     name,

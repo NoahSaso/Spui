@@ -19,7 +19,12 @@ export const ArtistRow: FunctionComponent<ArtistRowProps> = ({
   const loadable = useRecoilValueLoadable(getArtist(_artist ? "" : id))
   const artist = loadable.state === "hasValue" ? loadable.contents : undefined
 
-  if (!artist && !_artist) return <Loader size={32} />
+  if (!artist && !_artist)
+    return (
+      <div className="flex flex-row justify-center items-center h-row">
+        <Loader size={32} />
+      </div>
+    )
 
   const {
     name,

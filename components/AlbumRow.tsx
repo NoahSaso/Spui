@@ -16,7 +16,12 @@ export const AlbumRow: FunctionComponent<AlbumRowProps> = ({ id, _album }) => {
   const loadable = useRecoilValueLoadable(getAlbum(_album ? "" : id))
   const album = loadable.state === "hasValue" ? loadable.contents : undefined
 
-  if (!album && !_album) return <Loader size={32} />
+  if (!album && !_album)
+    return (
+      <div className="flex flex-row justify-center items-center h-row">
+        <Loader size={32} />
+      </div>
+    )
 
   const {
     name,

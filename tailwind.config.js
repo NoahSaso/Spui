@@ -23,6 +23,7 @@ module.exports = {
     extend: {
       height: {
         footer: "5rem",
+        row: "4.5rem",
       },
     },
   },

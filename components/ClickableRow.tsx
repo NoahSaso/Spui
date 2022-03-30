@@ -53,7 +53,7 @@ type ClickableRowProps = {
   textColor?: string
 } & Action
 
-const containerClassName =
+const containedClassName =
   "p-3 flex-1 flex flex-row justify-start items-stretch gap-4"
 
 // Pass onClick to make it a clickable div, and path to make it a local Next Link.
@@ -104,22 +104,22 @@ export const ClickableRow: FunctionComponent<ClickableRowProps> = ({
   )
 
   return (
-    <div className="w-full h-[4.5rem] cursor-pointer hover:bg-hover active:bg-hover flex flex-row justify-start items-stretch">
+    <div className="w-full h-row cursor-pointer hover:bg-hover active:bg-hover flex flex-row justify-start items-stretch">
       {onClick ? (
         <div
-          className={classNames(containerClassName, className)}
+          className={classNames(containedClassName, className)}
           onClick={onClick}
         >
           {contained}
         </div>
       ) : path ? (
         <Link href={path}>
-          <a className={classNames(containerClassName, className)}>
+          <a className={classNames(containedClassName, className)}>
             {contained}
           </a>
         </Link>
       ) : href ? (
-        <a href={href} className={classNames(containerClassName, className)}>
+        <a href={href} className={classNames(containedClassName, className)}>
           {contained}
         </a>
       ) : null}
