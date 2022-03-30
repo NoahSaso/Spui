@@ -22,7 +22,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
     {/* min-height is largest line-height of text (3xl => 2.25rem) plus vertical padding (4 => 2rem). 2.25rem + 2rem = 4.25rem */}
     {/* This way the header will not change size once text loads. */}
     {(!!title || !!backPath) && (
-      <div className="flex flex-row items-center">
+      <div className="flex flex-row items-center w-full">
         {!!backPath && (
           <Link href={backPath}>
             <a className="h-full flex flex-row justify-start items-center hover:opacity-70 active:opacity-70 z-10">
