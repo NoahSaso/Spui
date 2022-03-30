@@ -13,7 +13,7 @@ const NowPage: NextPage = () => {
 
   return (
     <>
-      <Header title="Now Playing" titleCentered />
+      <Header title="Now Playing" />
 
       <div className="flex-1 overflow-y-auto visible-scrollbar self-stretch flex flex-col justify-start items-center">
         {error ? (

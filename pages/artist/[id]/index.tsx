@@ -32,14 +32,14 @@ const ArtistPage: NextPage = () => {
           <p>{error}</p>
         ) : null}
 
-        <h2 className="my-2 font-lg">Top Tracks</h2>
+        <h2 className="my-2 pl-3 text-lg">Top Tracks</h2>
         <div>
           {topTracks?.map((track) => (
             <TrackRow key={track.id} _track={track} />
           ))}
         </div>
 
-        <h2 className="mt-10 mb-2 font-lg">Albums</h2>
+        <h2 className="mt-10 mb-2 pl-3 text-lg">Albums</h2>
 
         {albums?.map((album) => (
           <AlbumRow key={album.id} id={album.id} _album={album} />

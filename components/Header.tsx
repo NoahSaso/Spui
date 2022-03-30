@@ -12,7 +12,7 @@ type HeaderProps = PropsWithChildren<{
 export const Header: FunctionComponent<HeaderProps> = ({
   title,
   backPath,
-  titleCentered,
+  titleCentered = true,
   children,
 }) => (
   <div
