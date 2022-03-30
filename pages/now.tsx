@@ -46,7 +46,7 @@ const NowPage: NextPage = () => {
               {track.name}
             </h1>
 
-            <div className="text-xl text-center leading-5 mt-3 text-secondary self-stretch flex justify-center items-center flex-wrap gap-4">
+            <div className="text-xl text-center leading-5 mt-3 text-secondary self-stretch flex justify-center items-center flex-wrap gap-6">
               {track.artists.map(({ id, name }) => (
                 <Link href={`/artist/${id}`} key={id}>
                   <a className="hover:opacity-70 active:opacity-70">{name}</a>
