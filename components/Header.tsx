@@ -6,11 +6,13 @@ import { IoChevronBack } from "react-icons/io5"
 type HeaderProps = PropsWithChildren<{
   title?: string
   backPath?: string
+  titleCentered?: boolean
 }>
 
 export const Header: FunctionComponent<HeaderProps> = ({
   title,
   backPath,
+  titleCentered,
   children,
 }) => (
   <div
@@ -40,6 +42,8 @@ export const Header: FunctionComponent<HeaderProps> = ({
 
               // Center title if back button displaying.
               "flex-1 -ml-8 px-10 text-center": backPath,
+              // Center title if no back button but flag set.
+              "flex-1 px-10 text-center": !backPath && titleCentered,
             })}
           >
             {title}

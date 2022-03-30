@@ -109,13 +109,12 @@ const NowPlayingTab: FunctionComponent<TabProps> = (props) => {
         <img
           src={currentPlayback.item.album.images.slice(-1)[0]?.url}
           alt="art"
-          className="w-7 h-7 object-cover"
+          className="w-[34px] h-[34px] object-cover"
         />
       ) : (
         <CgLoadbarSound color={colors.light} size={38} />
       )}
-      <p className="text-xs mt-1">{currentPlayback.item.name}</p>
-      <p className="text-xs text-spotify">{currentPlayback.device.name}</p>
+      <p className="text-xs text-spotify mt-2">{currentPlayback.device.name}</p>
     </Tab>
   )
 }

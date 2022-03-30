@@ -25,18 +25,25 @@ const PlaylistPage: NextPage = () => {
     <>
       <Header title={playlist?.name} backPath="/playlists" />
 
-      <div className="flex-1 overflow-y-auto visible-scrollbar self-stretch my-1">
+      <div className="flex-1 overflow-y-auto visible-scrollbar self-stretch my-1 flex flex-col items-stretch">
         {loadable.state === "loading" ? (
           <Loader expand />
         ) : loadable.state === "hasError" ? (
           <p>{error}</p>
         ) : null}
 
-        <div>
-          {tracks?.map(({ track }) => (
-            <TrackRow key={track.id} _track={track} />
-          ))}
-        </div>
+        {playlist && playlist.images.length > 0 && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={playlist.images[0].url}
+            alt="art"
+            className="my-4 self-center w-[44%] aspect-square object-cover"
+          />
+        )}
+
+        {tracks?.map(({ track }) => (
+          <TrackRow key={track.id} _track={track} />
+        ))}
       </div>
     </>
   )

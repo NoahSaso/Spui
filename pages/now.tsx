@@ -13,7 +13,7 @@ const NowPage: NextPage = () => {
 
   return (
     <>
-      <Header title="Now Playing" />
+      <Header title="Now Playing" titleCentered />
 
       <div className="flex-1 overflow-y-auto visible-scrollbar self-stretch flex flex-col justify-start items-center">
         {error ? (
@@ -25,7 +25,7 @@ const NowPage: NextPage = () => {
             <ContextRow context={context} />
 
             <Link href={`/album/${track.album.id}`}>
-              <a className="mt-20 block w-[44%] aspect-square">
+              <a className="mt-10 block w-[44%] aspect-square">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={track.album.images[0].url}
@@ -55,7 +55,7 @@ const NowPage: NextPage = () => {
             </div>
           </>
         ) : (
-          <p>Nothing playing</p>
+          <p className="mt-10">Nothing</p>
         )}
       </div>
     </>
