@@ -62,7 +62,7 @@ const Tab: FunctionComponent<TabProps> = ({
   isActive,
   children,
 }) => (
-  <Link href={href} prefetch={false}>
+  <Link href={href}>
     <a
       className={classNames(
         "flex-1 flex flex-col justify-center items-center",

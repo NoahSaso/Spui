@@ -24,7 +24,7 @@ const NowPage: NextPage = () => {
           <>
             <ContextRow context={context} />
 
-            <Link href={`/album/${track.album.id}`} prefetch={false}>
+            <Link href={`/album/${track.album.id}`}>
               <a className="mt-10 w-full flex flex-col items-center">
                 <LargeImage
                   images={track.album.images}
@@ -47,7 +47,7 @@ const NowPage: NextPage = () => {
 
             <div className="text-xl text-center leading-5 mt-3 text-secondary self-stretch flex justify-center items-center flex-wrap gap-6">
               {track.artists.map(({ id, name }) => (
-                <Link href={`/artist/${id}`} key={id} prefetch={false}>
+                <Link href={`/artist/${id}`} key={id}>
                   <a className="hover:opacity-70 active:opacity-70">{name}</a>
                 </Link>
               ))}
