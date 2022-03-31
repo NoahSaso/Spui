@@ -8,7 +8,6 @@ import { Playlists } from "@/services/api"
 import { ApiError } from "@/services/api/common"
 import { GetPlaylistsResponse } from "@/services/api/playlists"
 
-// TODO: Add playlists to state to cache the list using jotai instead of recoil.
 const PlaylistsPage: NextPage = () => {
   const { accessToken } = useRequireAuthentication()
 
