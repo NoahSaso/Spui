@@ -1,10 +1,10 @@
 import { FunctionComponent } from "react"
 import { IoChatbubbleOutline, IoCopyOutline } from "react-icons/io5"
 import { toast } from "react-toastify"
-import { useRecoilValueLoadable } from "recoil"
+import { useRecoilValue } from "recoil"
 
 import { ClickableRow, LoaderRow } from "@/components"
-import { getAlbum } from "@/state"
+import { useAlbum, validAccessTokenOrNull } from "@/state"
 import { Album } from "@/types"
 
 interface AlbumRowProps {
@@ -13,10 +13,11 @@ interface AlbumRowProps {
 }
 
 export const AlbumRow: FunctionComponent<AlbumRowProps> = ({ id, _album }) => {
-  const loadable = useRecoilValueLoadable(getAlbum(_album ? "" : id))
-  const album = loadable.state === "hasValue" ? loadable.contents : undefined
+  const accessToken = useRecoilValue(validAccessTokenOrNull)
+  const { data: album, isLoading } = useAlbum(accessToken, _album ? "" : id)
 
-  if (!album && !_album) return <LoaderRow />
+  // If _album passed, just use that instead and don't show loader.
+  if (isLoading && !_album) return <LoaderRow />
 
   const {
     name,

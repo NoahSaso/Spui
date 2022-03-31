@@ -1,21 +1,10 @@
-import { selectorFamily } from "recoil"
+import { useQuery } from "react-query"
 
 import { Search } from "@/services/api"
-import { validAccessTokenOrNull } from "@/state"
+import { ApiError } from "@/services/api/common"
 
-export const getSearchResults = selectorFamily<
-  Search.SearchResponse | undefined,
-  string
->({
-  key: "getSearchResults",
-  get:
-    (search) =>
-    async ({ get }) => {
-      if (!search) return
-
-      const accessToken = get(validAccessTokenOrNull)
-      if (!accessToken) return
-
-      return await Search.get(accessToken, search)
-    },
-})
+export const useSearchResults = (accessToken: string | null, search: string) =>
+  useQuery<Search.SearchResponse | undefined, ApiError>(
+    ["search", search],
+    () => (accessToken && search ? Search.get(accessToken, search) : undefined)
+  )

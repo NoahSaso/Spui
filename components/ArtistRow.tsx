@@ -1,10 +1,10 @@
 import { FunctionComponent } from "react"
 import { IoChatbubbleOutline, IoCopyOutline } from "react-icons/io5"
 import { toast } from "react-toastify"
-import { useRecoilValueLoadable } from "recoil"
+import { useRecoilValue } from "recoil"
 
 import { ClickableRow, LoaderRow } from "@/components"
-import { getArtist } from "@/state"
+import { useArtist, validAccessTokenOrNull } from "@/state"
 import { Artist } from "@/types"
 
 interface ArtistRowProps {
@@ -16,10 +16,11 @@ export const ArtistRow: FunctionComponent<ArtistRowProps> = ({
   id,
   _artist,
 }) => {
-  const loadable = useRecoilValueLoadable(getArtist(_artist ? "" : id))
-  const artist = loadable.state === "hasValue" ? loadable.contents : undefined
+  const accessToken = useRecoilValue(validAccessTokenOrNull)
+  const { data: artist, isLoading } = useArtist(accessToken, _artist ? "" : id)
 
-  if (!artist && !_artist) return <LoaderRow />
+  // If _artist passed, just use that instead and don't show loader.
+  if (isLoading && !_artist) return <LoaderRow />
 
   const {
     name,

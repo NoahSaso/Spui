@@ -4,19 +4,18 @@ import InfiniteScroll from "react-infinite-scroll-component"
 
 import { Header, LargeImage, Loader, LoaderRow, TrackRow } from "@/components"
 import { useRequireAuthentication, useWindowDimensions } from "@/hooks"
-import { Playlists } from "@/services/api"
+import { GetPlaylistTracksResponse } from "@/services/api/playlists"
 import { usePlaylist, usePlaylistTracks } from "@/state"
 
 const PlaylistPage: NextPage = () => {
   const { accessToken } = useRequireAuthentication()
-
   const { isReady, query } = useRouter()
 
   const {
     data: playlist,
     isError: playlistIsError,
     error: playlistError,
-    isLoading,
+    isLoading: playlistIsLoading,
   } = usePlaylist(
     accessToken,
     isReady && typeof query.id === "string" ? query.id : ""
@@ -40,13 +39,8 @@ const PlaylistPage: NextPage = () => {
   )
 
   const tracks = (
-    (tracksData?.pages.filter(
-      Boolean
-    ) as Playlists.GetPlaylistTracksResponse[]) ?? []
+    (tracksData?.pages.filter(Boolean) as GetPlaylistTracksResponse[]) ?? []
   ).flatMap(({ items }) => items)
-
-  const isError = playlistIsError || tracksIsError
-  const error = playlistError || tracksError
 
   return (
     <>
@@ -56,17 +50,19 @@ const PlaylistPage: NextPage = () => {
         id="scrollable-container"
         className="flex-1 overflow-y-auto visible-scrollbar self-stretch my-1 flex flex-col items-stretch"
       >
-        {isLoading && <Loader expand />}
-        {isError && !!error && <p>{error.message}</p>}
-
-        {playlist && playlist.images.length > 0 && (
+        {playlistIsLoading ? (
+          <Loader expand />
+        ) : playlistIsError && playlistError ? (
+          <p>{playlistError.message}</p>
+        ) : playlist && playlist.images.length > 0 ? (
           <LargeImage
             images={playlist.images}
             alt={`${playlist.name} cover art`}
             className="my-4 self-center"
           />
-        )}
+        ) : null}
 
+        {tracksIsError && !!tracksError && <p>{tracksError.message}</p>}
         <InfiniteScroll
           dataLength={tracks.length}
           next={fetchNextPage}

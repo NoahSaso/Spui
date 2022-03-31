@@ -5,11 +5,10 @@ import { toast } from "react-toastify"
 import { useRecoilValue } from "recoil"
 
 import { ClickableRow } from "@/components"
-import { useCurrentPlayback } from "@/hooks"
 import { DevicePicker } from "@/services"
 import { Player } from "@/services/api"
 import { ApiError, KnownError } from "@/services/api/common"
-import { validAccessTokenOrNull } from "@/state"
+import { useCurrentPlayback, validAccessTokenOrNull } from "@/state"
 import { colors } from "@/theme"
 import { Track } from "@/types"
 
@@ -57,7 +56,7 @@ export const TrackRow: FunctionComponent<TrackRow> = ({
     }
   }
 
-  const { currentPlayback } = useCurrentPlayback()
+  const { data: currentPlayback } = useCurrentPlayback(accessToken)
 
   return (
     <ClickableRow

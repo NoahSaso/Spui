@@ -14,8 +14,11 @@ import { MdAccountCircle } from "react-icons/md"
 import { useRecoilValue } from "recoil"
 
 import { Loader } from "@/components"
-import { useCurrentPlayback } from "@/hooks"
-import { isLoggedInSelector } from "@/state"
+import {
+  isLoggedInSelector,
+  useCurrentPlayback,
+  validAccessTokenOrNull,
+} from "@/state"
 import { colors } from "@/theme"
 
 export const Footer = () => {
@@ -80,18 +83,24 @@ const Tab: FunctionComponent<TabProps> = ({
 )
 
 const NowPlayingTab: FunctionComponent<TabProps> = (props) => {
-  const { currentPlayback, updateCurrentPlayback } = useCurrentPlayback()
+  const accessToken = useRecoilValue(validAccessTokenOrNull)
+
+  const {
+    data: currentPlayback,
+    isLoading,
+    refetch,
+  } = useCurrentPlayback(accessToken)
 
   // Refresh playback every 5 seconds.
   useEffect(() => {
-    const interval = setInterval(() => updateCurrentPlayback(), 1000 * 5)
+    const interval = setInterval(() => refetch(), 1000 * 5)
     // Refresh immediately.
-    updateCurrentPlayback()
+    refetch()
 
     return () => clearInterval(interval)
-  }, [updateCurrentPlayback])
+  }, [refetch])
 
-  if (currentPlayback === undefined) {
+  if (isLoading) {
     return (
       <Tab {...props} data={{ ...props.data, Icon: undefined }}>
         <Loader size={38} />

@@ -1,90 +1,41 @@
-import { selectorFamily } from "recoil"
+import { useInfiniteQuery, useQuery } from "react-query"
 
 import { Artists } from "@/services/api"
-import { validAccessTokenOrNull } from "@/state"
-import { Album, Artist, Track } from "@/types"
+import { ApiError } from "@/services/api/common"
+import { Artist, Track } from "@/types"
 
-export const getArtist = selectorFamily<Artist | undefined, string>({
-  key: "getArtist",
-  get:
-    (artistId) =>
-    async ({ get }) => {
-      if (!artistId) return
+export const useArtist = (accessToken: string | null, id: string) =>
+  useQuery<Artist | undefined, ApiError>(["artist", id], () =>
+    accessToken && id ? Artists.get(accessToken, id) : undefined
+  )
 
-      const accessToken = get(validAccessTokenOrNull)
-      if (!accessToken) return
+export const useArtistAlbums = (
+  accessToken: string | null,
+  id: string,
+  pageSize: number
+) =>
+  useInfiniteQuery<Artists.GetArtistAlbumsResponse | undefined, ApiError>(
+    ["artist", "infiniteAlbums", id],
+    async ({ pageParam = 1 }) => {
+      if (!accessToken || !id) return undefined
 
-      return await Artists.get(accessToken, artistId)
+      const response = await Artists.getAlbums(
+        accessToken,
+        id,
+        pageSize,
+        (pageParam - 1) * pageSize
+      )
+      return response
     },
-})
-
-export const getArtistAlbums = selectorFamily<Album[] | undefined, string>({
-  key: "getArtistAlbums",
-  get:
-    (artistId) =>
-    async ({ get }) => {
-      if (!artistId) return
-
-      const accessToken = get(validAccessTokenOrNull)
-      if (!accessToken) return
-
-      const albums = []
-
-      const limit = 50
-      let page = 1
-      let pagesLeft = true
-      do {
-        const pagedAlbums = await Artists.getAlbums(
-          accessToken,
-          artistId,
-          limit,
-          (page - 1) * limit
-        )
-
-        albums.push(...pagedAlbums.items)
-        pagesLeft = pagedAlbums.next !== null
-
-        page++
-      } while (pagesLeft)
-
-      return albums
-    },
-})
-
-export const getArtistTopTracks = selectorFamily<Track[] | undefined, string>({
-  key: "getArtistTopTracks",
-  get:
-    (artistId) =>
-    async ({ get }) => {
-      if (!artistId) return
-
-      const accessToken = get(validAccessTokenOrNull)
-      if (!accessToken) return
-
-      return await Artists.getTopTracks(accessToken, artistId)
-    },
-})
-
-export interface ArtistWithAlbumsAndTopTracks {
-  artist: Artist
-  albums: Album[]
-  topTracks: Track[]
-}
-
-export const getArtistWithAlbumsAndTopTracks = selectorFamily<
-  ArtistWithAlbumsAndTopTracks | undefined,
-  string
->({
-  key: "getArtistWithAlbumsAndTopTracks",
-  get:
-    (artistId) =>
-    ({ get }) => {
-      if (!artistId) return
-
-      const artist = get(getArtist(artistId))
-      const albums = get(getArtistAlbums(artistId))
-      const topTracks = get(getArtistTopTracks(artistId))
-
-      return artist && albums && topTracks && { artist, albums, topTracks }
-    },
-})
+    {
+      getNextPageParam: (lastPage) =>
+        // If no next parameter, no more.
+        !lastPage?.next
+          ? undefined
+          : Math.floor((lastPage?.offset ?? 0) / pageSize) + 1 + 1,
+    }
+  )
+export const useArtistTopTracks = (accessToken: string | null, id: string) =>
+  useQuery<Track[] | undefined, ApiError>(["artist", "topTracks", id], () =>
+    accessToken && id ? Artists.getTopTracks(accessToken, id) : undefined
+  )

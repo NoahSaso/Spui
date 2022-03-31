@@ -1,17 +1,21 @@
 import { FunctionComponent, useCallback, useEffect, useState } from "react"
 import { IoCheckmark } from "react-icons/io5"
-import { useRecoilValueLoadable, useSetRecoilState } from "recoil"
+import { useRecoilValue } from "recoil"
 
 import { ErrorBoundary, Loader, Modal } from "@/components"
 import { DevicePicker } from "@/services"
-import { devicesIdAtom, getDevices } from "@/state"
+import { useDevices, validAccessTokenOrNull } from "@/state"
 import { Device as DeviceType } from "@/types"
 
 export const DevicePickerContainer = () => {
-  const setDevicesId = useSetRecoilState(devicesIdAtom)
-
-  const loadable = useRecoilValueLoadable(getDevices)
-  const devices = loadable.state === "hasValue" ? loadable.contents : undefined
+  const accessToken = useRecoilValue(validAccessTokenOrNull)
+  const {
+    data: devices,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useDevices(accessToken)
 
   const [visible, setVisible] = useState(false)
 
@@ -29,24 +33,23 @@ export const DevicePickerContainer = () => {
   // Refresh devices every 10 seconds when the modal is open.
   useEffect(() => {
     if (visible) {
-      const interval = setInterval(
-        () => setDevicesId((id) => id + 1),
-        1000 * 10
-      )
+      const interval = setInterval(refetch, 1000 * 10)
       // Update right away.
-      setDevicesId((id) => id + 1)
+      refetch()
 
       return () => clearInterval(interval)
     }
-  }, [visible, setDevicesId])
+  }, [visible, refetch])
 
   return (
     <Modal visible={visible} hide={() => setVisible(false)}>
       <p className="text-center mb-10">Devices</p>
 
       <ErrorBoundary>
-        {loadable.state === "loading" ? (
+        {isLoading ? (
           <Loader expand />
+        ) : isError && error ? (
+          <p>{error}</p>
         ) : (
           <div className="w-3/5 self-center flex flex-col gap-4">
             {devices?.map((device) => (

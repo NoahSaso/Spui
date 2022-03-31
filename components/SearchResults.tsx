@@ -1,5 +1,5 @@
 import { FunctionComponent } from "react"
-import { useRecoilValueLoadable } from "recoil"
+import { useRecoilValue } from "recoil"
 
 import {
   AlbumRow,
@@ -8,7 +8,7 @@ import {
   SearchCategory,
   TrackRow,
 } from "@/components"
-import { getSearchResults } from "@/state"
+import { useSearchResults, validAccessTokenOrNull } from "@/state"
 
 interface SearchResultsProps {
   search: string
@@ -17,15 +17,23 @@ interface SearchResultsProps {
 export const SearchResults: FunctionComponent<SearchResultsProps> = ({
   search,
 }) => {
-  const loadable = useRecoilValueLoadable(getSearchResults(search))
-  const results = loadable.state === "hasValue" ? loadable.contents : undefined
+  const accessToken = useRecoilValue(validAccessTokenOrNull)
 
-  if (!search) return null
-  if (!results) return <Loader expand />
+  const {
+    data: results,
+    isError,
+    error,
+    isLoading,
+  } = useSearchResults(accessToken, search)
+
+  if (isLoading) return <Loader expand />
+  if (!search || !results) return null
 
   const { tracks, artists, albums } = results
 
-  return (
+  return isError && error ? (
+    <p>{error}</p>
+  ) : (
     <>
       <SearchCategory
         title="Tracks"

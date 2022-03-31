@@ -1,46 +1,80 @@
 import type { NextPage } from "next"
 import { useRouter } from "next/router"
-import { useRecoilValueLoadable } from "recoil"
+import InfiniteScroll from "react-infinite-scroll-component"
 
-import { Header, LargeImage, Loader, TrackRow } from "@/components"
-import { useRequireAuthentication } from "@/hooks"
-import { getAlbumWithTracks } from "@/state"
+import { Header, LargeImage, Loader, LoaderRow, TrackRow } from "@/components"
+import { useRequireAuthentication, useWindowDimensions } from "@/hooks"
+import { GetAlbumTracksResponse } from "@/services/api/albums"
+import { useAlbum, useAlbumTracks } from "@/state"
 
 const AlbumPage: NextPage = () => {
-  useRequireAuthentication()
-
+  const { accessToken } = useRequireAuthentication()
   const { isReady, query } = useRouter()
 
-  const loadable = useRecoilValueLoadable(
-    getAlbumWithTracks(isReady && typeof query.id === "string" ? query.id : "")
+  const {
+    data: album,
+    isError: albumIsError,
+    error: albumError,
+    isLoading: albumIsLoading,
+  } = useAlbum(
+    accessToken,
+    isReady && typeof query.id === "string" ? query.id : ""
   )
-  const { album, tracks } =
-    (loadable.state === "hasValue" && loadable.contents) || {}
-  const error =
-    loadable.state === "hasError" ? loadable.contents.message : undefined
+
+  const { height } = useWindowDimensions()
+  // Roughly the amount that will show on one page.
+  // 4.5rem (row height) is 72px
+  const pageSize = Math.ceil(height / 72) || 20
+
+  const {
+    data: tracksData,
+    error: tracksError,
+    isError: tracksIsError,
+    fetchNextPage,
+    hasNextPage,
+  } = useAlbumTracks(
+    accessToken,
+    isReady && typeof query.id === "string" ? query.id : "",
+    pageSize
+  )
+
+  const tracks = (
+    (tracksData?.pages.filter(Boolean) as GetAlbumTracksResponse[]) ?? []
+  ).flatMap(({ items }) => items)
 
   return (
     <>
       <Header title={album?.name} />
 
-      <div className="flex-1 overflow-y-auto visible-scrollbar self-stretch my-1 flex flex-col items-stretch">
-        {loadable.state === "loading" ? (
+      <div
+        id="scrollable-container"
+        className="flex-1 overflow-y-auto visible-scrollbar self-stretch my-1 flex flex-col items-stretch"
+      >
+        {albumIsLoading ? (
           <Loader expand />
-        ) : loadable.state === "hasError" ? (
-          <p>{error}</p>
-        ) : null}
-
-        {album && album.images.length > 0 && (
+        ) : albumIsError && albumError ? (
+          <p>{albumError.message}</p>
+        ) : album && album.images.length > 0 ? (
           <LargeImage
             images={album.images}
             alt={`${album.name} cover art`}
             className="my-4 self-center"
           />
-        )}
+        ) : null}
 
-        {tracks?.map((track) => (
-          <TrackRow key={track.id} _track={track} />
-        ))}
+        {tracksIsError && !!tracksError && <p>{tracksError.message}</p>}
+        <InfiniteScroll
+          dataLength={tracks.length}
+          next={fetchNextPage}
+          hasMore={hasNextPage ?? true}
+          loader={<LoaderRow />}
+          scrollThreshold={0.6}
+          scrollableTarget="scrollable-container"
+        >
+          {tracks.map((track) => (
+            <TrackRow key={track.id} _track={track} />
+          ))}
+        </InfiniteScroll>
       </div>
     </>
   )

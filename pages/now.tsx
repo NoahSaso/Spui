@@ -3,11 +3,17 @@ import type { NextPage } from "next"
 import Link from "next/link"
 
 import { ContextRow, Header, LargeImage, Loader } from "@/components"
-import { useCurrentPlayback, useRequireAuthentication } from "@/hooks"
+import { useRequireAuthentication } from "@/hooks"
+import { useCurrentPlayback } from "@/state"
 
 const NowPage: NextPage = () => {
-  useRequireAuthentication()
-  const { currentPlayback, error } = useCurrentPlayback()
+  const { accessToken } = useRequireAuthentication()
+  const {
+    data: currentPlayback,
+    isLoading,
+    isError,
+    error,
+  } = useCurrentPlayback(accessToken)
 
   const { item: track, context } = currentPlayback || {}
 
@@ -16,9 +22,9 @@ const NowPage: NextPage = () => {
       <Header title="Now Playing" />
 
       <div className="flex-1 overflow-y-auto visible-scrollbar self-stretch flex flex-col justify-start items-center">
-        {error ? (
+        {isError && error ? (
           <p>{error}</p>
-        ) : currentPlayback === undefined ? (
+        ) : isLoading ? (
           <Loader expand />
         ) : track && context ? (
           <>
