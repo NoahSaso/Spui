@@ -15,7 +15,7 @@ export const Loader: FunctionComponent<LoaderProps> = ({
 }) => (
   <div
     className={classNames("flex justify-center items-center", {
-      "w-full h-full": expand,
+      "w-full h-full flex-1": expand,
     })}
   >
     <PuffLoader size={size} color={colors.light} />

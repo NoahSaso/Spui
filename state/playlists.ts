@@ -1,108 +1,37 @@
-import { selector, selectorFamily } from "recoil"
+import { useInfiniteQuery, useQuery } from "react-query"
 
 import { Playlists } from "@/services/api"
-import { validAccessTokenOrNull } from "@/state"
-import { Playlist, PlaylistTrack } from "@/types"
+import { ApiError } from "@/services/api/common"
+import { Playlist } from "@/types"
 
-const getPlaylistsPaged = selectorFamily<
-  Playlists.GetPlaylistsResponse | undefined,
-  { limit?: number; page?: number }
->({
-  key: "getPlaylistsPaged",
-  get:
-    ({ limit = 50, page = 1 }) =>
-    async ({ get }) => {
-      const accessToken = get(validAccessTokenOrNull)
-      if (!accessToken) return
+export const usePlaylist = (accessToken: string | null, id: string) =>
+  useQuery<Playlist | undefined, ApiError>(["playlist", id], () =>
+    accessToken && id ? Playlists.get(accessToken, id) : undefined
+  )
 
-      const offset = (page - 1) * limit
-      return await Playlists.get(accessToken, limit, offset)
+export const usePlaylistTracks = (
+  accessToken: string | null,
+  id: string,
+  pageSize: number
+) =>
+  useInfiniteQuery<Playlists.GetPlaylistTracksResponse | undefined, ApiError>(
+    ["playlist", "infiniteTracks", id],
+    async ({ pageParam = 1 }) => {
+      if (!accessToken || !id) return undefined
+
+      const response = await Playlists.getTracks(
+        accessToken,
+        id,
+        pageSize,
+        (pageParam - 1) * pageSize
+      )
+      return response
     },
-})
-
-export const getAllPlaylists = selector<Playlist[] | undefined>({
-  key: "getAllPlaylists",
-  get: async ({ get }) => {
-    const playlists = []
-    let page = 1
-    let pagesLeft = true
-    do {
-      const pagedPlaylists = get(getPlaylistsPaged({ page: page++ }))
-      // No access token.
-      if (!pagedPlaylists) return
-
-      playlists.push(...pagedPlaylists.items)
-      pagesLeft = pagedPlaylists.next !== null
-    } while (pagesLeft)
-
-    return playlists
-  },
-})
-
-export const getPlaylist = selectorFamily<Playlist | undefined, string>({
-  key: "getPlaylist",
-  get:
-    (playlistId) =>
-    ({ get }) =>
-      playlistId
-        ? get(getAllPlaylists)?.find(({ id }) => id === playlistId)
-        : undefined,
-})
-
-export const getPlaylistTracks = selectorFamily<
-  PlaylistTrack[] | undefined,
-  string
->({
-  key: "getPlaylistTracks",
-  get:
-    (playlistId) =>
-    async ({ get }) => {
-      if (!playlistId) return
-
-      const accessToken = get(validAccessTokenOrNull)
-      if (!accessToken) return
-
-      const tracks = []
-
-      const limit = 50
-      let page = 1
-      let pagesLeft = true
-      do {
-        const pagedTracks = await Playlists.getTracks(
-          accessToken,
-          playlistId,
-          limit,
-          (page - 1) * limit
-        )
-
-        tracks.push(...pagedTracks.items)
-        pagesLeft = pagedTracks.next !== null
-
-        page++
-      } while (pagesLeft)
-
-      return tracks
-    },
-})
-
-export interface PlaylistWithTracks {
-  playlist: Playlist
-  tracks: PlaylistTrack[]
-}
-
-export const getPlaylistWithTracks = selectorFamily<
-  PlaylistWithTracks | undefined,
-  string
->({
-  key: "getPlaylistWithTracks",
-  get:
-    (playlistId) =>
-    ({ get }) => {
-      if (!playlistId) return
-
-      const playlist = get(getPlaylist(playlistId))
-      const tracks = get(getPlaylistTracks(playlistId))
-
-      return playlist && tracks && { playlist, tracks }
-    },
-})
+    {
+      getNextPageParam: (lastPage) =>
+        // If no next parameter, no more.
+        !lastPage?.next
+          ? undefined
+          : Math.floor((lastPage?.offset ?? 0) / pageSize) + 1 + 1,
+    }
+  )

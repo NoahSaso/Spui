@@ -1,12 +1,6 @@
-import {
-  FunctionComponent,
-  Suspense,
-  useCallback,
-  useEffect,
-  useState,
-} from "react"
+import { FunctionComponent, useCallback, useEffect, useState } from "react"
 import { IoCheckmark } from "react-icons/io5"
-import { useRecoilValue, useSetRecoilState } from "recoil"
+import { useRecoilValueLoadable, useSetRecoilState } from "recoil"
 
 import { ErrorBoundary, Loader, Modal } from "@/components"
 import { DevicePicker } from "@/services"
@@ -15,7 +9,9 @@ import { Device as DeviceType } from "@/types"
 
 export const DevicePickerContainer = () => {
   const setDevicesId = useSetRecoilState(devicesIdAtom)
-  const devices = useRecoilValue(getDevices)
+
+  const loadable = useRecoilValueLoadable(getDevices)
+  const devices = loadable.state === "hasValue" ? loadable.contents : undefined
 
   const [visible, setVisible] = useState(false)
 
@@ -49,9 +45,19 @@ export const DevicePickerContainer = () => {
       <p className="text-center mb-10">Devices</p>
 
       <ErrorBoundary>
-        <Suspense fallback={<Loader expand />}>
-          <DeviceList devices={devices ?? []} onPick={onPick} />
-        </Suspense>
+        {loadable.state === "loading" ? (
+          <Loader expand />
+        ) : (
+          <div className="w-3/5 self-center flex flex-col gap-4">
+            {devices?.map((device) => (
+              <Device
+                key={device.id}
+                device={device}
+                onClick={() => onPick(device)}
+              />
+            ))}
+          </div>
+        )}
       </ErrorBoundary>
     </Modal>
   )
@@ -77,26 +83,4 @@ const Device: FunctionComponent<DeviceProps> = ({
     </div>
     {selected && <IoCheckmark size={24} />}
   </div>
-)
-
-interface DeviceListProps {
-  devices: DeviceType[]
-  onPick: (device: DeviceType) => void
-}
-
-const DeviceList: FunctionComponent<DeviceListProps> = ({
-  devices,
-  onPick,
-}) => (
-  <>
-    <div className="w-3/5 self-center flex flex-col gap-4">
-      {devices?.map((device) => (
-        <Device
-          key={device.id}
-          device={device}
-          onClick={() => onPick(device)}
-        />
-      ))}
-    </div>
-  </>
 )

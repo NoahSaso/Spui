@@ -1,36 +1,63 @@
 import type { NextPage } from "next"
 import { useRouter } from "next/router"
-import { useRecoilValueLoadable } from "recoil"
+import InfiniteScroll from "react-infinite-scroll-component"
 
-import { Header, LargeImage, Loader, TrackRow } from "@/components"
-import { useRequireAuthentication } from "@/hooks"
-import { getPlaylistWithTracks } from "@/state"
+import { Header, LargeImage, Loader, LoaderRow, TrackRow } from "@/components"
+import { useRequireAuthentication, useWindowDimensions } from "@/hooks"
+import { Playlists } from "@/services/api"
+import { usePlaylist, usePlaylistTracks } from "@/state"
 
 const PlaylistPage: NextPage = () => {
-  useRequireAuthentication()
+  const { accessToken } = useRequireAuthentication()
 
   const { isReady, query } = useRouter()
 
-  const loadable = useRecoilValueLoadable(
-    getPlaylistWithTracks(
-      isReady && typeof query.id === "string" ? query.id : ""
-    )
+  const {
+    data: playlist,
+    isError: playlistIsError,
+    error: playlistError,
+    isLoading,
+  } = usePlaylist(
+    accessToken,
+    isReady && typeof query.id === "string" ? query.id : ""
   )
-  const { playlist, tracks } =
-    (loadable.state === "hasValue" && loadable.contents) || {}
-  const error =
-    loadable.state === "hasError" ? loadable.contents.message : undefined
+
+  const { height } = useWindowDimensions()
+  // Roughly the amount that will show on one page.
+  // 4.5rem (row height) is 72px
+  const pageSize = Math.ceil(height / 72) || 20
+
+  const {
+    data: tracksData,
+    error: tracksError,
+    isError: tracksIsError,
+    fetchNextPage,
+    hasNextPage,
+  } = usePlaylistTracks(
+    accessToken,
+    isReady && typeof query.id === "string" ? query.id : "",
+    pageSize
+  )
+
+  const tracks = (
+    (tracksData?.pages.filter(
+      Boolean
+    ) as Playlists.GetPlaylistTracksResponse[]) ?? []
+  ).flatMap(({ items }) => items)
+
+  const isError = playlistIsError || tracksIsError
+  const error = playlistError || tracksError
 
   return (
     <>
       <Header title={playlist?.name} />
 
-      <div className="flex-1 overflow-y-auto visible-scrollbar self-stretch my-1 flex flex-col items-stretch">
-        {loadable.state === "loading" ? (
-          <Loader expand />
-        ) : loadable.state === "hasError" ? (
-          <p>{error}</p>
-        ) : null}
+      <div
+        id="scrollable-container"
+        className="flex-1 overflow-y-auto visible-scrollbar self-stretch my-1 flex flex-col items-stretch"
+      >
+        {isLoading && <Loader expand />}
+        {isError && !!error && <p>{error.message}</p>}
 
         {playlist && playlist.images.length > 0 && (
           <LargeImage
@@ -40,9 +67,18 @@ const PlaylistPage: NextPage = () => {
           />
         )}
 
-        {tracks?.map(({ track }) => (
-          <TrackRow key={track.id} _track={track} />
-        ))}
+        <InfiniteScroll
+          dataLength={tracks.length}
+          next={fetchNextPage}
+          hasMore={hasNextPage ?? true}
+          loader={<LoaderRow />}
+          scrollThreshold={0.6}
+          scrollableTarget="scrollable-container"
+        >
+          {tracks.map(({ track }) => (
+            <TrackRow key={track.id} _track={track} />
+          ))}
+        </InfiniteScroll>
       </div>
     </>
   )

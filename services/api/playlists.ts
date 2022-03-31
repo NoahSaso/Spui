@@ -2,14 +2,19 @@ import { Playlist, PlaylistTrack } from "@/types"
 
 import { get as _get, ListResponse } from "./common"
 
-export type GetPlaylistsResponse = ListResponse<Playlist>
-
 export const get = async (
+  accessToken: string,
+  playlistId: string
+): Promise<Playlist> => _get(accessToken, `/playlists/${playlistId}`)
+
+export type ListPlaylistsResponse = ListResponse<Playlist>
+
+export const list = async (
   accessToken: string,
   // Max = 50
   limit?: number,
   offset?: number
-): Promise<GetPlaylistsResponse> =>
+): Promise<ListPlaylistsResponse> =>
   _get(accessToken, "/me/playlists", {
     ...(limit && { limit }),
     ...(offset && { offset }),

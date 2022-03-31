@@ -6,7 +6,6 @@ import { Header, LoaderRow, PlaylistRow } from "@/components"
 import { useRequireAuthentication, useWindowDimensions } from "@/hooks"
 import { Playlists } from "@/services/api"
 import { ApiError } from "@/services/api/common"
-import { GetPlaylistsResponse } from "@/services/api/playlists"
 
 const PlaylistsPage: NextPage = () => {
   const { accessToken } = useRequireAuthentication()
@@ -17,13 +16,13 @@ const PlaylistsPage: NextPage = () => {
   const pageSize = Math.ceil(height / 72) || 20
 
   const { data, error, isError, fetchNextPage, hasNextPage } = useInfiniteQuery<
-    GetPlaylistsResponse | undefined,
+    Playlists.ListPlaylistsResponse | undefined,
     ApiError
   >(
     "infinitePlaylists",
     async ({ pageParam = 1 }) => {
       if (!accessToken) return undefined
-      const response = await Playlists.get(
+      const response = await Playlists.list(
         accessToken,
         pageSize,
         (pageParam - 1) * pageSize
@@ -40,7 +39,7 @@ const PlaylistsPage: NextPage = () => {
   )
 
   const playlists = (
-    (data?.pages.filter(Boolean) as GetPlaylistsResponse[]) ?? []
+    (data?.pages.filter(Boolean) as Playlists.ListPlaylistsResponse[]) ?? []
   ).flatMap(({ items }) => items)
 
   return (

@@ -1,7 +1,7 @@
 import type { NextPage } from "next"
-import { Suspense, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
-import { ErrorBoundary, Header, Loader, SearchResults } from "@/components"
+import { ErrorBoundary, Header, SearchResults } from "@/components"
 import { useRequireAuthentication } from "@/hooks"
 
 const SearchPage: NextPage = () => {
@@ -31,9 +31,7 @@ const SearchPage: NextPage = () => {
 
       <div className="flex-1 overflow-y-auto visible-scrollbar self-stretch">
         <ErrorBoundary>
-          <Suspense fallback={<Loader expand />}>
-            <SearchResults search={activeSearch} />
-          </Suspense>
+          <SearchResults search={activeSearch} />
         </ErrorBoundary>
       </div>
     </>

@@ -1,10 +1,10 @@
-import { FunctionComponent, Suspense } from "react"
+import { FunctionComponent } from "react"
 import { IoChatbubbleOutline, IoCopyOutline } from "react-icons/io5"
 import { toast } from "react-toastify"
 import { useRecoilValue } from "recoil"
 
 import { ClickableRow, LoaderRow } from "@/components"
-import { getPlaylist } from "@/state"
+import { usePlaylist, validAccessTokenOrNull } from "@/state"
 import { Playlist } from "@/types"
 
 interface PlaylistRowProps {
@@ -12,19 +12,18 @@ interface PlaylistRowProps {
   _playlist?: Playlist
 }
 
-export const PlaylistRow: FunctionComponent<PlaylistRowProps> = (props) => (
-  <Suspense fallback={<LoaderRow />}>
-    <_PlaylistRow {...props} />
-  </Suspense>
-)
-
-export const _PlaylistRow: FunctionComponent<PlaylistRowProps> = ({
+export const PlaylistRow: FunctionComponent<PlaylistRowProps> = ({
   id,
   _playlist,
 }) => {
-  const playlist = useRecoilValue(getPlaylist(_playlist ? "" : id))
+  const accessToken = useRecoilValue(validAccessTokenOrNull)
+  const { data: playlist, isLoading } = usePlaylist(
+    accessToken,
+    _playlist ? "" : id
+  )
 
-  if (!playlist && !_playlist) return null
+  // If _playlist passed, just use that instead and don't show loader.
+  if (isLoading && !_playlist) return <LoaderRow />
 
   const {
     name,
