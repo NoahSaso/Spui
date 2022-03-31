@@ -1,4 +1,5 @@
 import type { NextPage } from "next"
+import Head from "next/head"
 import { useEffect, useState } from "react"
 
 import { ErrorBoundary, Header, SearchResults } from "@/components"
@@ -19,6 +20,10 @@ const SearchPage: NextPage = () => {
 
   return (
     <>
+      <Head>
+        <title>Spui | Search</title>
+      </Head>
+
       <Header showBack={false}>
         <input
           type="text"

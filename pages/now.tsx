@@ -1,5 +1,6 @@
 import classNames from "classnames"
 import type { NextPage } from "next"
+import Head from "next/head"
 import Link from "next/link"
 
 import { ContextRow, Header, LargeImage, Loader } from "@/components"
@@ -19,6 +20,10 @@ const NowPage: NextPage = () => {
 
   return (
     <>
+      <Head>
+        <title>Spui | Now Playing</title>
+      </Head>
+
       <Header title="Now Playing" />
 
       <div className="flex-1 overflow-y-auto visible-scrollbar self-stretch flex flex-col justify-start items-center">

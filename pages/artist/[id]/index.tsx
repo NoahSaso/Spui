@@ -1,4 +1,5 @@
 import type { NextPage } from "next"
+import Head from "next/head"
 import { useRouter } from "next/router"
 import InfiniteScroll from "react-infinite-scroll-component"
 
@@ -61,6 +62,10 @@ const ArtistPage: NextPage = () => {
 
   return (
     <>
+      <Head>
+        <title>Spui | Artist{artist ? ` | ${artist.name}` : ""}</title>
+      </Head>
+
       <Header title={artist?.name} />
 
       <div

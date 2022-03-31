@@ -1,4 +1,5 @@
 import type { NextPage } from "next"
+import Head from "next/head"
 import InfiniteScroll from "react-infinite-scroll-component"
 
 import { Header, LoaderRow, PlaylistRow } from "@/components"
@@ -25,6 +26,10 @@ const PlaylistsPage: NextPage = () => {
 
   return (
     <>
+      <Head>
+        <title>Spui | Playlists</title>
+      </Head>
+
       <Header title="Playlists" />
 
       <div
