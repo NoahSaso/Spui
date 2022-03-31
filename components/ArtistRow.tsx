@@ -1,7 +1,7 @@
-import { FunctionComponent } from "react"
+import { FunctionComponent, Suspense } from "react"
 import { IoChatbubbleOutline, IoCopyOutline } from "react-icons/io5"
 import { toast } from "react-toastify"
-import { useRecoilValueLoadable } from "recoil"
+import { useRecoilValue } from "recoil"
 
 import { ClickableRow, LoaderRow } from "@/components"
 import { getArtist } from "@/state"
@@ -12,14 +12,19 @@ interface ArtistRowProps {
   _artist?: Artist
 }
 
-export const ArtistRow: FunctionComponent<ArtistRowProps> = ({
+export const ArtistRow: FunctionComponent<ArtistRowProps> = (props) => (
+  <Suspense fallback={<LoaderRow />}>
+    <_ArtistRow {...props} />
+  </Suspense>
+)
+
+export const _ArtistRow: FunctionComponent<ArtistRowProps> = ({
   id,
   _artist,
 }) => {
-  const loadable = useRecoilValueLoadable(getArtist(_artist ? "" : id))
-  const artist = loadable.state === "hasValue" ? loadable.contents : undefined
+  const artist = useRecoilValue(getArtist(_artist ? "" : id))
 
-  if (!artist && !_artist) return <LoaderRow />
+  if (!artist && !_artist) return null
 
   const {
     name,

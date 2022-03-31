@@ -1,7 +1,7 @@
-import { FunctionComponent } from "react"
+import { FunctionComponent, Suspense } from "react"
 import { IoChatbubbleOutline, IoCopyOutline } from "react-icons/io5"
 import { toast } from "react-toastify"
-import { useRecoilValueLoadable } from "recoil"
+import { useRecoilValue } from "recoil"
 
 import { ClickableRow, LoaderRow } from "@/components"
 import { getPlaylist } from "@/state"
@@ -12,14 +12,19 @@ interface PlaylistRowProps {
   _playlist?: Playlist
 }
 
-export const PlaylistRow: FunctionComponent<PlaylistRowProps> = ({
+export const PlaylistRow: FunctionComponent<PlaylistRowProps> = (props) => (
+  <Suspense fallback={<LoaderRow />}>
+    <_PlaylistRow {...props} />
+  </Suspense>
+)
+
+export const _PlaylistRow: FunctionComponent<PlaylistRowProps> = ({
   id,
   _playlist,
 }) => {
-  const loadable = useRecoilValueLoadable(getPlaylist(_playlist ? "" : id))
-  const playlist = loadable.state === "hasValue" ? loadable.contents : undefined
+  const playlist = useRecoilValue(getPlaylist(_playlist ? "" : id))
 
-  if (!playlist && !_playlist) return <LoaderRow />
+  if (!playlist && !_playlist) return null
 
   const {
     name,
