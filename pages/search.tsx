@@ -29,7 +29,10 @@ const SearchPage: NextPage = () => {
         />
       </Header>
 
-      <div className="flex-1 overflow-y-auto visible-scrollbar self-stretch">
+      <div
+        id="scrollable-container"
+        className="flex-1 overflow-y-auto visible-scrollbar self-stretch"
+      >
         <ErrorBoundary>
           <SearchResults search={activeSearch} />
         </ErrorBoundary>

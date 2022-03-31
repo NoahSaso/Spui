@@ -7,11 +7,16 @@ export interface SearchResponse {
   artists: ListResponse<Artist>
   albums: ListResponse<Album>
   playlists: ListResponse<Playlist>
+  shows: ListResponse<any>
+  episodes: ListResponse<any>
 }
 
 export const get = async (
   accessToken: string,
   q: string,
+  // Max = 50
+  limit?: number,
+  offset?: number,
   types?: Type[]
 ): Promise<SearchResponse> =>
   _get(accessToken, "/search", {
@@ -19,6 +24,6 @@ export const get = async (
     type: (
       (types?.length && types) || [Type.Album, Type.Artist, Type.Track]
     ).join(","),
-    // Max = 50
-    limit: 50,
+    ...(limit && { limit }),
+    ...(offset && { offset }),
   })

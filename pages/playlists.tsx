@@ -1,11 +1,10 @@
 import type { NextPage } from "next"
 import InfiniteScroll from "react-infinite-scroll-component"
-import { useInfiniteQuery } from "react-query"
 
 import { Header, LoaderRow, PlaylistRow } from "@/components"
 import { useRequireAuthentication, useWindowDimensions } from "@/hooks"
 import { Playlists } from "@/services/api"
-import { ApiError } from "@/services/api/common"
+import { usePlaylists } from "@/state"
 
 const PlaylistsPage: NextPage = () => {
   const { accessToken } = useRequireAuthentication()
@@ -15,27 +14,9 @@ const PlaylistsPage: NextPage = () => {
   // 4.5rem (row height) is 72px
   const pageSize = Math.ceil(height / 72) || 20
 
-  const { data, error, isError, fetchNextPage, hasNextPage } = useInfiniteQuery<
-    Playlists.ListPlaylistsResponse | undefined,
-    ApiError
-  >(
-    "infinitePlaylists",
-    async ({ pageParam = 1 }) => {
-      if (!accessToken) return undefined
-      const response = await Playlists.list(
-        accessToken,
-        pageSize,
-        (pageParam - 1) * pageSize
-      )
-      return response
-    },
-    {
-      getNextPageParam: (lastPage) =>
-        // If no next parameter, no more.
-        !lastPage?.next
-          ? undefined
-          : Math.floor((lastPage?.offset ?? 0) / pageSize) + 1 + 1,
-    }
+  const { data, error, isError, fetchNextPage, hasNextPage } = usePlaylists(
+    accessToken,
+    pageSize
   )
 
   const playlists = (
