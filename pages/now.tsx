@@ -25,7 +25,7 @@ const NowPage: NextPage = () => {
             <ContextRow context={context} />
 
             <Link href={`/album/${track.album.id}`}>
-              <a className="mt-10 w-full flex flex-col items-center">
+              <a className="mt-4 w-full flex flex-col items-center">
                 <LargeImage
                   images={track.album.images}
                   alt={`${track.name} cover art`}
@@ -35,7 +35,7 @@ const NowPage: NextPage = () => {
             </Link>
 
             <h1
-              className={classNames("mt-6 text-center", {
+              className={classNames("mt-4 text-center", {
                 // Vary text size by title length.
                 "text-3xl": track.name.length < 26,
                 "text-xl": track.name.length >= 26 && track.name.length < 52,
