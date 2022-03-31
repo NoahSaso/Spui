@@ -33,7 +33,7 @@ const Option: FunctionComponent<OptionProps> = ({
       {contained}
     </div>
   ) : path ? (
-    <Link href={path}>
+    <Link href={path} prefetch={false}>
       <a className={optionClassName}>{contained}</a>
     </Link>
   ) : href ? (
@@ -113,7 +113,7 @@ export const ClickableRow: FunctionComponent<ClickableRowProps> = ({
           {contained}
         </div>
       ) : path ? (
-        <Link href={path}>
+        <Link href={path} prefetch={false}>
           <a className={classNames(containedClassName, className)}>
             {contained}
           </a>
