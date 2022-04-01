@@ -128,7 +128,7 @@ const Home: NextPage = () => {
           <input
             type="submit"
             value="Connect to Spotify"
-            className="bg-spotify rounded-full py-2 px-4 cursor-pointer hover:opacity-70 active:opacity-70 transition"
+            className="bg-spuiOrange rounded-full py-2 px-4 cursor-pointer hover:opacity-70 active:opacity-70 transition"
           />
         </form>
       )}

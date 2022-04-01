@@ -123,7 +123,9 @@ const NowPlayingTab: FunctionComponent<TabProps> = (props) => {
       ) : (
         <CgLoadbarSound color={colors.light} size={38} />
       )}
-      <p className="text-xs text-spotify mt-2">{currentPlayback.device.name}</p>
+      <p className="text-xs text-spuiOrange mt-2">
+        {currentPlayback.device.name}
+      </p>
     </Tab>
   )
 }

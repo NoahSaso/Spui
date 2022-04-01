@@ -9,6 +9,7 @@ module.exports = {
 
     secondary: "#888888",
 
-    spotify: "#1db954",
+    spuiOrange: "#ff803a",
+    spuiDark: "#231f20",
   },
 }

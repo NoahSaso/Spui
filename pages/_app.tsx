@@ -10,6 +10,7 @@ import { RecoilRoot } from "recoil"
 
 import { DevicePickerContainer, Footer } from "@/components"
 import { useTokenMonitor } from "@/hooks"
+import { colors } from "@/theme"
 
 const TITLE = "Spui"
 const DESCRIPTION = "Alternate UI for Spotify."
@@ -53,6 +54,31 @@ const App: FunctionComponent<AppProps> = (props) => (
         content="black-translucent"
       />
       <meta name="apple-mobile-web-app-title" content={TITLE} />
+      <link
+        rel="apple-touch-icon"
+        sizes="180x180"
+        href="/apple-touch-icon.png"
+      />
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/favicon-32x32.png"
+      />
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="16x16"
+        href="/favicon-16x16.png"
+      />
+      <link rel="manifest" href="/site.webmanifest" />
+      <link
+        rel="mask-icon"
+        href="/safari-pinned-tab.svg"
+        color={colors.spuiOrange}
+      />
+      <meta name="msapplication-TileColor" content={colors.spuiDark} />
+      <meta name="theme-color" content={colors.spuiDark} />
 
       {/* SEO */}
       <meta name="description" content={DESCRIPTION} />

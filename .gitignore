@@ -39,3 +39,5 @@ public/fallback-development.js
 public/workbox-*.js*
 public/sw.js*
 public/worker-*.js*
+
+misc/
