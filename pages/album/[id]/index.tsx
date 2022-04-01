@@ -67,19 +67,24 @@ const AlbumPage: NextPage = () => {
           />
         ) : null}
 
-        {tracksIsError && !!tracksError && <p>{tracksError.message}</p>}
-        <InfiniteScroll
-          dataLength={tracks.length}
-          next={fetchNextPage}
-          hasMore={hasNextPage ?? true}
-          loader={<LoaderRow />}
-          scrollThreshold={0.6}
-          scrollableTarget="scrollable-container"
-        >
-          {tracks.map((track) => (
-            <TrackRow key={track.id} _track={track} />
-          ))}
-        </InfiniteScroll>
+        {!albumIsLoading && (
+          <>
+            {tracksIsError && !!tracksError && <p>{tracksError.message}</p>}
+
+            <InfiniteScroll
+              dataLength={tracks.length}
+              next={fetchNextPage}
+              hasMore={hasNextPage ?? true}
+              loader={<LoaderRow />}
+              scrollThreshold={0.6}
+              scrollableTarget="scrollable-container"
+            >
+              {tracks.map((track) => (
+                <TrackRow key={track.id} _track={track} />
+              ))}
+            </InfiniteScroll>
+          </>
+        )}
       </div>
     </>
   )
