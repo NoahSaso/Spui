@@ -63,8 +63,9 @@ export const TrackRow: FunctionComponent<TrackRow> = ({
       title={name}
       subtitle={artists.map((artist) => artist.name).join(" • ")}
       textColor={
+        // TODO: Add some animation to indicate current playback instead of just color.
         currentPlayback && currentPlayback.item.id === id
-          ? colors.spotify
+          ? colors.spuiOrange
           : undefined
       }
       images={images}
