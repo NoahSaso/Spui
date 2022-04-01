@@ -106,17 +106,17 @@ const Home: NextPage = () => {
   ])
 
   return (
-    <div className="w-full h-full flex justify-center items-center max-w-sm px-10 mx-auto">
+    <div className="w-full h-full flex justify-center items-center px-10 mx-auto">
       {authenticating ? (
         authenticationError ? (
-          <p className="text-red">{authenticationError}</p>
+          <p className="text-red max-w-sm">{authenticationError}</p>
         ) : (
           <Loader expand />
         )
       ) : (
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col items-stretch gap-2 text-dark w-full"
+          className="flex flex-col items-stretch gap-2 text-dark w-80"
         >
           {/* <input
             type="text"
@@ -128,7 +128,7 @@ const Home: NextPage = () => {
           <input
             type="submit"
             value="Connect to Spotify"
-            className="bg-spuiOrange rounded-full py-2 px-4 cursor-pointer hover:opacity-70 active:opacity-70 transition"
+            className="bg-spuiOrange rounded-full p-3 cursor-pointer hover:opacity-70 active:opacity-70 transition"
           />
         </form>
       )}
