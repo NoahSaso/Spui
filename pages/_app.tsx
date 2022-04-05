@@ -9,7 +9,7 @@ import { ToastContainer } from "react-toastify"
 import { RecoilRoot } from "recoil"
 
 import { DevicePickerContainer, Footer } from "@/components"
-import { useTokenMonitor } from "@/hooks"
+import { useRefreshCurrentPlayback, useTokenMonitor } from "@/hooks"
 import { colors } from "@/theme"
 
 const TITLE = "Spui"
@@ -20,6 +20,8 @@ const queryClient = new QueryClient()
 const Spui: FunctionComponent<AppProps> = ({ Component, pageProps }) => {
   // Refresh access token automatically when it gets close to expiring.
   useTokenMonitor()
+  // Refresh current playback information.
+  useRefreshCurrentPlayback()
 
   return (
     <div className="absolute top-0 bottom-0 left-0 right-0">

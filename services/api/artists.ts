@@ -1,11 +1,11 @@
 import { Album, Artist, Track } from "@/types"
 
-import { get as _get, ListResponse } from "./common"
+import { GET, ListResponse } from "./common"
 
 export const get = async (
   accessToken: string,
   artistId: string
-): Promise<Artist> => _get(accessToken, `/artists/${artistId}`)
+): Promise<Artist> => GET(accessToken, `/artists/${artistId}`)
 
 export type GetArtistAlbumsResponse = ListResponse<Album>
 
@@ -16,7 +16,7 @@ export const getAlbums = async (
   limit?: number,
   offset?: number
 ): Promise<GetArtistAlbumsResponse> =>
-  _get(accessToken, `/artists/${artistId}/albums`, {
+  GET(accessToken, `/artists/${artistId}/albums`, {
     ...(limit && { limit }),
     ...(offset && { offset }),
     // Exclude "compilation".
@@ -32,7 +32,7 @@ export const getTopTracks = async (
   artistId: string
 ): Promise<Track[]> =>
   (
-    await _get<{ tracks: Track[] }>(
+    await GET<{ tracks: Track[] }>(
       accessToken,
       `/artists/${artistId}/top-tracks`,
       { country }

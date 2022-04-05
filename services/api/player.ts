@@ -1,18 +1,18 @@
 import { PlaybackState, RepeatState } from "@/types"
 
-import { get, post, put } from "./common"
+import { GET, POST, PUT } from "./common"
 
 export const getPlaybackState = async (
   accessToken: string
 ): Promise<PlaybackState | false> =>
   // If undefined is returned, there is no active playback (204 no data).
-  (await get(accessToken, "/me/player")) ?? false
+  (await GET(accessToken, "/me/player")) ?? false
 
 export const play = async (
   accessToken: string,
   deviceId?: string
 ): Promise<void> =>
-  put(accessToken, "/me/player/play", {
+  PUT(accessToken, "/me/player/play", {
     ...(deviceId && { device_id: deviceId }),
   })
 
@@ -20,7 +20,7 @@ export const pause = async (
   accessToken: string,
   deviceId?: string
 ): Promise<void> =>
-  put(accessToken, "/me/player/pause", {
+  PUT(accessToken, "/me/player/pause", {
     ...(deviceId && { device_id: deviceId }),
   })
 
@@ -28,7 +28,7 @@ export const next = async (
   accessToken: string,
   deviceId?: string
 ): Promise<void> =>
-  post(accessToken, "/me/player/next", {
+  POST(accessToken, "/me/player/next", {
     ...(deviceId && { device_id: deviceId }),
   })
 
@@ -36,7 +36,7 @@ export const previous = async (
   accessToken: string,
   deviceId?: string
 ): Promise<void> =>
-  post(accessToken, "/me/player/previous", {
+  POST(accessToken, "/me/player/previous", {
     ...(deviceId && { device_id: deviceId }),
   })
 
@@ -45,7 +45,7 @@ export const seek = async (
   positionMs: number,
   deviceId?: string
 ): Promise<void> =>
-  put(accessToken, "/me/player/seek", {
+  PUT(accessToken, "/me/player/seek", {
     position_ms: positionMs,
     ...(deviceId && { device_id: deviceId }),
   })
@@ -55,7 +55,7 @@ export const setRepeatState = async (
   state: RepeatState,
   deviceId?: string
 ): Promise<void> =>
-  put(accessToken, "/me/player/repeat", {
+  PUT(accessToken, "/me/player/repeat", {
     state,
     ...(deviceId && { device_id: deviceId }),
   })
@@ -65,7 +65,7 @@ export const setVolume = async (
   volumePercent: number,
   deviceId?: string
 ): Promise<void> =>
-  put(accessToken, "/me/player/volume", {
+  PUT(accessToken, "/me/player/volume", {
     volume_percent: volumePercent,
     ...(deviceId && { device_id: deviceId }),
   })
@@ -75,7 +75,7 @@ export const setShuffleState = async (
   state: boolean,
   deviceId?: string
 ): Promise<void> =>
-  put(accessToken, "/me/player/shuffle", {
+  PUT(accessToken, "/me/player/shuffle", {
     state,
     ...(deviceId && { device_id: deviceId }),
   })
@@ -92,7 +92,7 @@ export const getRecentlyPlayed = async (
   // Max = 50
   limit = 50
 ): Promise<void> =>
-  get(accessToken, "/me/player/recently-played", {
+  GET(accessToken, "/me/player/recently-played", {
     ...(limit && { limit }),
     ...(before ? { before } : after ? { after } : undefined),
   })
@@ -102,7 +102,7 @@ export const addToQueue = async (
   uri: string,
   deviceId?: string
 ): Promise<void> =>
-  post(accessToken, "/me/player/queue", {
+  POST(accessToken, "/me/player/queue", {
     uri,
     ...(deviceId && { device_id: deviceId }),
   })

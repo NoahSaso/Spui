@@ -78,7 +78,7 @@ const processResponse = async <D>(
   }
 }
 
-export const get = async <D>(
+export const GET = async <D>(
   accessToken: string,
   endpoint: string,
   query?: Record<string, any>,
@@ -100,7 +100,7 @@ export const get = async <D>(
     )
   )
 
-export const post = async <D>(
+export const POST = async <D>(
   accessToken: string,
   endpoint: string,
   query?: Record<string, any>,
@@ -114,7 +114,7 @@ export const post = async <D>(
         (query ? "?" + new URLSearchParams(query).toString() : ""),
       {
         method: "POST",
-        ...(body && { body: new URLSearchParams(body) }),
+        ...(body && { body: JSON.stringify(body) }),
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -125,7 +125,7 @@ export const post = async <D>(
     )
   )
 
-export const put = async <D>(
+export const PUT = async <D>(
   accessToken: string,
   endpoint: string,
   query?: Record<string, any>,
@@ -139,7 +139,32 @@ export const put = async <D>(
         (query ? "?" + new URLSearchParams(query).toString() : ""),
       {
         method: "PUT",
-        ...(body && { body: new URLSearchParams(body) }),
+        ...(body && { body: JSON.stringify(body) }),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          ...headers,
+        },
+      }
+    )
+  )
+
+export const DELETE = async <D>(
+  accessToken: string,
+  endpoint: string,
+  query?: Record<string, any>,
+  body?: Record<string, any>,
+  headers: Record<string, string> = {}
+): Promise<D> =>
+  processResponse(
+    await fetch(
+      ApiPrefix +
+        endpoint +
+        (query ? "?" + new URLSearchParams(query).toString() : ""),
+      {
+        method: "DELETE",
+        ...(body && { body: JSON.stringify(body) }),
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",

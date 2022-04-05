@@ -1,6 +1,6 @@
 import { Album, Artist, Playlist, Track, Type } from "@/types"
 
-import { get as _get, ListResponse } from "./common"
+import { GET, ListResponse } from "./common"
 
 export interface SearchResponse {
   tracks: ListResponse<Track>
@@ -19,7 +19,7 @@ export const get = async (
   offset?: number,
   types?: Type[]
 ): Promise<SearchResponse> =>
-  _get(accessToken, "/search", {
+  GET(accessToken, "/search", {
     q,
     type: (
       (types?.length && types) || [Type.Album, Type.Artist, Type.Track]

@@ -1,11 +1,11 @@
 import { Album, Track } from "@/types"
 
-import { get as _get, ListResponse } from "./common"
+import { GET, ListResponse } from "./common"
 
 export const get = async (
   accessToken: string,
   albumId: string
-): Promise<Album> => _get(accessToken, `/albums/${albumId}`)
+): Promise<Album> => GET(accessToken, `/albums/${albumId}`)
 
 export type GetAlbumTracksResponse = ListResponse<Track>
 
@@ -16,7 +16,7 @@ export const getTracks = async (
   limit?: number,
   offset?: number
 ): Promise<GetAlbumTracksResponse> =>
-  _get(accessToken, `/albums/${albumId}/tracks`, {
+  GET(accessToken, `/albums/${albumId}/tracks`, {
     ...(limit && { limit }),
     ...(offset && { offset }),
   })

@@ -1,12 +1,12 @@
 import { Device } from "@/types"
 
-import { get as _get } from "./common"
+import { GET } from "./common"
 
 export type GetDevicesResponse = Device[]
 
 export const get = async (accessToken: string): Promise<GetDevicesResponse> =>
   (
-    await _get<{ devices: GetDevicesResponse }>(
+    await GET<{ devices: GetDevicesResponse }>(
       accessToken,
       "/me/player/devices"
     )

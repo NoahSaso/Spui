@@ -23,7 +23,7 @@ export const TrackRow: FunctionComponent<TrackRow> = ({
     uri,
     name,
     artists,
-    album: { id: albumId, name: albumName, images },
+    album: { id: albumId, name: albumName, images } = {},
     external_urls: { spotify },
   },
 }) => {
@@ -84,11 +84,15 @@ export const TrackRow: FunctionComponent<TrackRow> = ({
             toast.success("Copied to clipboard 📋")
           },
         },
-        {
-          icon: <FiDisc size={20} />,
-          label: `Go to ${albumName}`,
-          path: `/album/${albumId}`,
-        },
+        ...(albumId
+          ? [
+              {
+                icon: <FiDisc size={20} />,
+                label: `Go to ${albumName}`,
+                path: `/album/${albumId}`,
+              },
+            ]
+          : []),
         ...artists.map(({ id, name }) => ({
           icon: <IoPerson size={20} />,
           label: `Go to ${name}`,

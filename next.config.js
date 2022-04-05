@@ -1,16 +1,15 @@
+const withTM = require("next-transpile-modules")(["react-slider"])
 const withPWA = require("next-pwa")
 
-const nextConfig = withPWA(
-  /** @type {import('next').NextConfig} */
-  {
-    pwa: {
-      dest: "public",
-    },
-    reactStrictMode: true,
-    experimental: {
-      emotion: true,
-    },
-  }
-)
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  pwa: {
+    dest: "public",
+  },
+  reactStrictMode: true,
+  experimental: {
+    emotion: true,
+  },
+}
 
-module.exports = nextConfig
+module.exports = withTM(withPWA(nextConfig))

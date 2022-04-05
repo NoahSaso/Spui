@@ -1,4 +1,6 @@
 export * from "./useFetchInitialAccessToken"
+export * from "./useFireAndForgetCallback"
+export * from "./useRefreshCurrentPlayback"
 export * from "./useRequireAuthentication"
 export * from "./useTokenMonitor"
 export * from "./useWindowDimensions"

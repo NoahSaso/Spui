@@ -79,7 +79,7 @@ export interface Album {
 }
 
 export interface Track {
-  album: Album
+  album?: Album
   artists: Artist[]
   available_markets: string[]
   disc_number: number

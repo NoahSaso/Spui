@@ -1,12 +1,7 @@
 import classNames from "classnames"
 import Link from "next/link"
 import { useRouter } from "next/router"
-import {
-  ComponentType,
-  FunctionComponent,
-  PropsWithChildren,
-  useEffect,
-} from "react"
+import { ComponentType, FunctionComponent, PropsWithChildren } from "react"
 import { IconType } from "react-icons"
 import { CgLoadbarSound, CgPlayList } from "react-icons/cg"
 import { IoSearch } from "react-icons/io5"
@@ -85,20 +80,7 @@ const Tab: FunctionComponent<TabProps> = ({
 const NowPlayingTab: FunctionComponent<TabProps> = (props) => {
   const accessToken = useRecoilValue(validAccessTokenOrNull)
 
-  const {
-    data: currentPlayback,
-    isLoading,
-    refetch,
-  } = useCurrentPlayback(accessToken)
-
-  // Refresh playback every 5 seconds.
-  useEffect(() => {
-    const interval = setInterval(() => refetch(), 1000 * 5)
-    // Refresh immediately.
-    refetch()
-
-    return () => clearInterval(interval)
-  }, [refetch])
+  const { data: currentPlayback, isLoading } = useCurrentPlayback(accessToken)
 
   if (isLoading) {
     return (
@@ -113,7 +95,8 @@ const NowPlayingTab: FunctionComponent<TabProps> = (props) => {
   return (
     // If something is playing, set isActive to true so we don't dim it.
     <Tab data={{ href: props.data.href }} isActive>
-      {currentPlayback.item.album.images.length > 0 ? (
+      {currentPlayback.item.album &&
+      currentPlayback.item.album.images.length > 0 ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={currentPlayback.item.album.images.slice(-1)[0]?.url}
