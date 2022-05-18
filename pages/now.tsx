@@ -169,122 +169,126 @@ const NowPage: NextPage = () => {
           <>
             <ContextRow context={context} />
 
-            <div className="w-2/3 mx-auto flex flex-col items-stretch">
+            <div className="w-3/4 flex-1 py-4 flex flex-col items-center gap-4">
               {track.album && (
                 <Link href={`/album/${track.album.id}`}>
-                  <a className="mt-4 flex flex-col items-center">
+                  <a className="flex-1 flex flex-col items-center">
                     <LargeImage
                       images={track.album.images}
                       alt={`${track.name} cover art`}
-                      className="my-4 !w-full"
+                      className="m-auto !w-[30vh] max-w-full"
                     />
                   </a>
                 </Link>
               )}
 
-              <div className="mt-4 flex flex-row justify-between items-center gap-2">
-                <h1
-                  className={classNames({
-                    // Vary text size by title length.
-                    "text-3xl": track.name.length < 26,
-                    "text-xl":
-                      track.name.length >= 26 && track.name.length < 52,
-                    "text-base": track.name.length >= 52,
-                  })}
-                >
-                  {track.name}
-                </h1>
+              <div className="flex flex-col items-stretch self-stretch">
+                <div className="flex flex-row justify-between items-start gap-2">
+                  <h1
+                    className={classNames("break-word", {
+                      // Vary text size by title length.
+                      "text-2xl": track.name.length < 26,
+                      "text-xl":
+                        track.name.length >= 26 && track.name.length < 52,
+                      "text-base": track.name.length >= 52,
+                    })}
+                  >
+                    {track.name}
+                  </h1>
 
-                <button
-                  onClick={isItemSaved ? unsave : save}
-                  className="hover:opacity-70 active:opacity-70"
-                  disabled={sendingAction}
-                >
-                  {isItemSaved ? (
-                    <IoHeart size="2rem" />
-                  ) : (
-                    <IoHeartOutline size="2rem" />
-                  )}
-                </button>
-              </div>
-
-              <div className="text-xl text-left leading-5 mt-3 text-secondary self-stretch flex justify-start items-center flex-wrap gap-6">
-                {track.artists.map(({ id, name }) => (
-                  <Link href={`/artist/${id}`} key={id}>
-                    <a className="hover:opacity-70 active:opacity-70">{name}</a>
-                  </Link>
-                ))}
-              </div>
-
-              <Slider
-                className="mt-6 cursor-pointer"
-                min={0}
-                max={durationSec}
-                value={progressSec}
-                onChange={(value: number) => setPendingProgress(value)}
-                onAfterChange={(value: number) => seekTo(value)}
-                renderThumb={({ className, ...props }) => (
-                  <div
-                    {...props}
-                    className={classNames(
-                      className,
-                      "w-3 h-3 -top-1 rounded-full bg-spuiOrange"
+                  <button
+                    onClick={isItemSaved ? unsave : save}
+                    className="hover:opacity-70 active:opacity-70"
+                    disabled={sendingAction}
+                  >
+                    {isItemSaved ? (
+                      <IoHeart size="2rem" />
+                    ) : (
+                      <IoHeartOutline size="2rem" />
                     )}
-                  ></div>
-                )}
-                renderTrack={({ className, ...props }) => (
-                  <div
-                    {...props}
-                    className={classNames(
-                      className,
-                      "bg-spuiDark rounded-full h-1"
-                    )}
-                  ></div>
-                )}
-              />
+                  </button>
+                </div>
 
-              <div className="mt-3 flex row justify-between items-center gap-2">
-                <p className="text-left flex-1">
-                  {secToTimeString(progressSec)}
-                </p>
-                <p className="text-right flex-1">
-                  -{secToTimeString(remainingSec)}
-                </p>
-              </div>
+                <div className="text-lg text-left mt-1 text-secondary self-stretch flex justify-start items-center flex-wrap gap-x-4 gap-y-2">
+                  {track.artists.map(({ id, name }) => (
+                    <Link href={`/artist/${id}`} key={id}>
+                      <a className="hover:opacity-70 active:opacity-70">
+                        {name}
+                      </a>
+                    </Link>
+                  ))}
+                </div>
 
-              <div className="mt-2 flex row justify-center items-center gap-4">
-                <button
-                  onClick={previous}
-                  className="hover:opacity-70 active:opacity-70"
-                  disabled={sendingAction}
-                >
-                  <IoPlaySkipBack size="2.5rem" />
-                </button>
-
-                <button
-                  onClick={isPlaying ? pause : play}
-                  className="hover:opacity-70 active:opacity-70"
-                  disabled={sendingAction}
-                >
-                  {isPlaying ? (
-                    <IoPauseCircle size="5rem" />
-                  ) : (
-                    <IoPlayCircle size="5rem" />
+                <Slider
+                  className="mt-3 cursor-pointer"
+                  min={0}
+                  max={durationSec}
+                  value={progressSec}
+                  onChange={(value: number) => setPendingProgress(value)}
+                  onAfterChange={(value: number) => seekTo(value)}
+                  renderThumb={({ className, ...props }) => (
+                    <div
+                      {...props}
+                      className={classNames(
+                        className,
+                        "w-3 h-3 -top-1 rounded-full bg-spuiOrange"
+                      )}
+                    ></div>
                   )}
-                </button>
+                  renderTrack={({ className, ...props }) => (
+                    <div
+                      {...props}
+                      className={classNames(
+                        className,
+                        "bg-spuiDark rounded-full h-1"
+                      )}
+                    ></div>
+                  )}
+                />
 
-                <button
-                  onClick={next}
-                  className="hover:opacity-70 active:opacity-70"
-                  disabled={sendingAction}
-                >
-                  <IoPlaySkipForward size="2.5rem" />
-                </button>
+                <div className="mt-2 flex row justify-between items-center gap-2">
+                  <p className="text-left flex-1">
+                    {secToTimeString(progressSec)}
+                  </p>
+                  <p className="text-right flex-1">
+                    -{secToTimeString(remainingSec)}
+                  </p>
+                </div>
+
+                <div className="mt-2 flex row justify-center items-center gap-4">
+                  <button
+                    onClick={previous}
+                    className="hover:opacity-70 active:opacity-70"
+                    disabled={sendingAction}
+                  >
+                    <IoPlaySkipBack size="2.5rem" />
+                  </button>
+
+                  <button
+                    onClick={isPlaying ? pause : play}
+                    className="hover:opacity-70 active:opacity-70"
+                    disabled={sendingAction}
+                  >
+                    {isPlaying ? (
+                      <IoPauseCircle size="5rem" />
+                    ) : (
+                      <IoPlayCircle size="5rem" />
+                    )}
+                  </button>
+
+                  <button
+                    onClick={next}
+                    className="hover:opacity-70 active:opacity-70"
+                    disabled={sendingAction}
+                  >
+                    <IoPlaySkipForward size="2.5rem" />
+                  </button>
+                </div>
               </div>
             </div>
           </>
         ) : (
-          <p className="mt-10">Nothing</p>
+          <p className="mt-10 text-center">Nothing</p>
         )}
       </div>
     </>

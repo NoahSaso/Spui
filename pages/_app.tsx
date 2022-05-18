@@ -28,10 +28,10 @@ const Spui: FunctionComponent<AppProps> = ({ Component, pageProps }) => {
       <div className="relative w-full h-full overflow-hidden flex flex-col justify-start items-stretch max-w-lg pt-safe mx-auto sm:px-1">
         <main>
           <Component {...pageProps} />
-
-          <DevicePickerContainer />
         </main>
         <Footer />
+
+        <DevicePickerContainer />
       </div>
     </div>
   )

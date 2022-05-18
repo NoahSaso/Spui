@@ -22,7 +22,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
   return (
     <div
       className={classNames(
-        "px-3 py-4 flex flex-col justify-start items-start bg-card w-full rounded-b-md",
+        "px-3 py-4 flex flex-col justify-start items-start bg-card w-full rounded-b-md flex-none",
         { "min-h-[4.25rem]": title }
       )}
     >

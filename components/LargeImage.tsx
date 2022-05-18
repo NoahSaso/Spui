@@ -18,6 +18,6 @@ export const LargeImage: FunctionComponent<LargeImageProps> = ({
   <img
     src={images[0].url}
     alt={alt || "cover art"}
-    className={classNames("w-2/3 aspect-square object-cover", className)}
+    className={classNames("w-2/3 aspect-square object-contain", className)}
   />
 )
