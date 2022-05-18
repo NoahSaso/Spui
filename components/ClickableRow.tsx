@@ -133,30 +133,33 @@ export const ClickableRow: FunctionComponent<ClickableRowProps> = ({
             <IoEllipsisHorizontal size={22} />
           </div>
 
-          <Modal visible={modalVisible} hide={() => setModalVisible(false)}>
-            {!!largeImageUrl && (
-              <img
-                src={largeImageUrl}
-                alt="art"
-                className="object-cover w-2/5 h-auto mb-4 self-center"
-              />
-            )}
-
-            <div className="w-3/5 self-center">
-              <p className="text-center mb-10">{title}</p>
-              {!!subtitle && (
-                <p className="text-center text-placeholder text-sm -mt-9 mb-10">
-                  {subtitle}
-                </p>
+          {/* Too much memory displaying a modal for every row. Only render when we want to display it. */}
+          {modalVisible && (
+            <Modal visible hide={() => setModalVisible(false)}>
+              {!!largeImageUrl && (
+                <img
+                  src={largeImageUrl}
+                  alt="art"
+                  className="object-cover w-2/5 h-auto mb-4 self-center"
+                />
               )}
 
-              <div className="flex flex-col gap-4">
-                {options.map((option) => (
-                  <Option option={option} key={option.label} />
-                ))}
+              <div className="w-3/5 self-center">
+                <p className="text-center mb-10">{title}</p>
+                {!!subtitle && (
+                  <p className="text-center text-placeholder text-sm -mt-9 mb-10">
+                    {subtitle}
+                  </p>
+                )}
+
+                <div className="flex flex-col gap-4">
+                  {options.map((option) => (
+                    <Option option={option} key={option.label} />
+                  ))}
+                </div>
               </div>
-            </div>
-          </Modal>
+            </Modal>
+          )}
         </>
       ) : (
         rightNode
