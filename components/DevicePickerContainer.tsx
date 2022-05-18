@@ -20,15 +20,29 @@ export const DevicePickerContainer = () => {
   const [visible, setVisible] = useState(false)
 
   const onPick = useCallback(
-    (device: DeviceType) => {
-      DevicePicker.pickedDevice(device)
+    (device?: DeviceType) => {
+      DevicePicker.pickedDevice(
+        device
+          ? { openedFallbackUri: false, device }
+          : { openedFallbackUri: true }
+      )
       setVisible(false)
     },
     [setVisible]
   )
 
+  // If no devices found, allow opening fallback URI.
+  const [fallbackUri, setFallbackUri] = useState<string>()
+
   // Listen for pick requests until unmounted.
-  useEffect(() => DevicePicker.subscribe(() => setVisible(true)), [])
+  useEffect(
+    () =>
+      DevicePicker.subscribe((uri) => {
+        setVisible(true)
+        setFallbackUri(uri)
+      }),
+    []
+  )
 
   // Refresh devices every 10 seconds when the modal is open.
   useEffect(() => {
@@ -43,7 +57,7 @@ export const DevicePickerContainer = () => {
 
   return (
     <Modal visible={visible} hide={() => setVisible(false)}>
-      <p className="text-center mb-10">Devices</p>
+      <p className="text-center mb-10 text-xl">Devices</p>
 
       <ErrorBoundary>
         {isLoading ? (
@@ -59,6 +73,24 @@ export const DevicePickerContainer = () => {
                 onClick={() => onPick(device)}
               />
             ))}
+            {!devices?.length && (
+              <>
+                <p className="text-center">
+                  No active devices found.
+                  <br />
+                  <a
+                    href={fallbackUri}
+                    className="underline"
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={() => onPick()}
+                  >
+                    Click here
+                  </a>{" "}
+                  to open manually.
+                </p>
+              </>
+            )}
           </div>
         )}
       </ErrorBoundary>

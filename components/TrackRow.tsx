@@ -11,6 +11,7 @@ import { ApiError, KnownError } from "@/services/api/common"
 import { useCurrentPlayback, validAccessTokenOrNull } from "@/state"
 import { colors } from "@/theme"
 import { Track } from "@/types"
+import { uriToDeepLink } from "@/utils"
 
 interface TrackRow {
   _track: Track
@@ -43,13 +44,20 @@ export const TrackRow: FunctionComponent<TrackRow> = ({
         error instanceof ApiError &&
         error.data.known === KnownError.NoActiveDevice
       ) {
-        DevicePicker.pickDevice(({ id, name }) =>
-          toast.promise(Player.addToQueue(accessToken, uri, id), {
-            pending: `Adding to queue on ${name}...`,
-            success: `Added to queue on ${name} 👍`,
-            error: `Failed to add to queue on ${name} 👎`,
-          })
-        )
+        DevicePicker.pickDevice(uriToDeepLink(uri), (event) => {
+          if (event.openedFallbackUri) {
+            toast.success("Opening...")
+          } else {
+            toast.promise(
+              Player.addToQueue(accessToken, uri, event.device.id),
+              {
+                pending: `Adding to queue on ${event.device.name}...`,
+                success: `Added to queue on ${event.device.name} 👍`,
+                error: `Failed to add to queue on ${event.device.name} 👎`,
+              }
+            )
+          }
+        })
       } else {
         toast.error("Failed to add to queue 👎")
       }
@@ -64,7 +72,7 @@ export const TrackRow: FunctionComponent<TrackRow> = ({
       subtitle={artists.map((artist) => artist.name).join(" • ")}
       textColor={
         // TODO: Add some animation to indicate current playback instead of just color.
-        currentPlayback && currentPlayback.item.id === id
+        currentPlayback && currentPlayback.item?.id === id
           ? colors.spuiOrange
           : undefined
       }

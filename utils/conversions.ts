@@ -11,3 +11,6 @@ export const secToTimeString = (seconds: number): string => {
   const secs = Math.abs(seconds) % 60
   return `${mins}:${secs < 10 ? "0" : ""}${secs}`
 }
+
+export const uriToDeepLink = (uri: string): string =>
+  uri.replaceAll(":", "/").replace("spotify/", "spotify://")

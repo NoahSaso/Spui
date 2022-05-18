@@ -1,22 +1,36 @@
 import { Device } from "@/types"
 
+type OpenListener = (uriPath: string) => void
+type PickHandledEvent =
+  | {
+      openedFallbackUri: false
+      device: Device
+    }
+  | {
+      openedFallbackUri: true
+      device?: never
+    }
+
 // Listen for pickDevice call to open picker.
-let openListener: (() => void) | null = null
+let openListener: OpenListener | null = null
 // Called once device is picked.
-let pickHandler: ((device: Device) => void) | null = null
+let pickHandler: ((event: PickHandledEvent) => void) | null = null
 
 // REQUESTER
 
 // Request to open device picker.
-export const pickDevice = (onPick: (device: Device) => void) => {
+export const pickDevice = (
+  uriPath: string,
+  onPick: (event: PickHandledEvent) => void
+) => {
   pickHandler = onPick
-  openListener?.()
+  openListener?.(uriPath)
 }
 
 // HANDLER
 
 // Setup handler for opening device picker.
-export const subscribe = (callback: () => void): (() => void) => {
+export const subscribe = (callback: OpenListener): (() => void) => {
   openListener = callback
   return () => {
     openListener = null
@@ -24,7 +38,7 @@ export const subscribe = (callback: () => void): (() => void) => {
 }
 
 // Device has been picked, fire callback and clear.
-export const pickedDevice = (device: Device) => {
-  pickHandler?.(device)
+export const pickedDevice = (event: PickHandledEvent) => {
+  pickHandler?.(event)
   pickHandler = null
 }
