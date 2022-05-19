@@ -10,11 +10,24 @@ export const getPlaybackState = async (
 
 export const play = async (
   accessToken: string,
-  deviceId?: string
+  {
+    deviceId,
+    contextUri,
+  }: {
+    deviceId?: string
+    contextUri?: string
+  } = {}
 ): Promise<void> =>
-  PUT(accessToken, "/me/player/play", {
-    ...(deviceId && { device_id: deviceId }),
-  })
+  PUT(
+    accessToken,
+    "/me/player/play",
+    {
+      ...(deviceId && { device_id: deviceId }),
+    },
+    {
+      ...(contextUri && { context_uri: contextUri }),
+    }
+  )
 
 export const pause = async (
   accessToken: string,

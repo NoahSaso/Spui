@@ -1,23 +1,29 @@
 import classNames from "classnames"
 import { useRouter } from "next/router"
-import { FunctionComponent, PropsWithChildren } from "react"
+import { FunctionComponent } from "react"
 import { IoChevronBack } from "react-icons/io5"
 
-type HeaderProps = PropsWithChildren<{
+type HeaderProps = {
   title?: string
-  titleCentered?: boolean
   showBack?: boolean
-}>
+  // If passed and no history to go back to, will use this for back button.
+  fallbackBackPath?: string
+  rightNode?: React.ReactNode
+}
 
 export const Header: FunctionComponent<HeaderProps> = ({
   title,
-  titleCentered = true,
   showBack = true,
+  fallbackBackPath,
+  rightNode,
   children,
 }) => {
   const router = useRouter()
+  const hasWindowBack =
+    typeof window !== "undefined" && window.history.state.idx > 0
   const canGoBack =
-    showBack && typeof window !== "undefined" && window.history.state.idx > 0
+    showBack &&
+    (hasWindowBack || (typeof window !== "undefined" && !!fallbackBackPath))
 
   return (
     <div
@@ -28,11 +34,15 @@ export const Header: FunctionComponent<HeaderProps> = ({
     >
       {/* min-height is largest line-height of text (3xl => 2.25rem) plus vertical padding (4 => 2rem). 2.25rem + 2rem = 4.25rem */}
       {/* This way the header will not change size once text loads. */}
-      {(!!title || canGoBack) && (
-        <div className="flex flex-row items-center w-full">
+      {(!!title || canGoBack || rightNode) && (
+        <div className="w-full grid grid-rows-1 grid-cols-[2rem_1fr_2rem]">
           {canGoBack && (
             <button
-              onClick={() => router.back()}
+              onClick={() =>
+                typeof window !== "undefined" && window.history.state.idx > 0
+                  ? router.back()
+                  : router.push(fallbackBackPath ?? "/")
+              }
               className="h-full flex flex-row justify-start items-center hover:opacity-70 active:opacity-70 z-10"
             >
               <IoChevronBack size="2rem" />
@@ -40,21 +50,19 @@ export const Header: FunctionComponent<HeaderProps> = ({
           )}
           {!!title && (
             <h1
-              className={classNames({
+              className={classNames("text-center", {
                 // Vary text size by title length.
                 "text-3xl": title && title.length < 26,
                 "text-xl": title && title.length >= 26 && title.length < 52,
                 "text-base": title && title.length >= 52,
 
-                // Center title.
-                "flex-1 px-10 text-center": titleCentered,
-                // Offset if back button present and title centered.
-                "-ml-8": canGoBack && titleCentered,
+                "col-start-2": !canGoBack,
               })}
             >
               {title}
             </h1>
           )}
+          {rightNode}
         </div>
       )}
 

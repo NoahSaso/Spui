@@ -1,4 +1,4 @@
-import { FunctionComponent } from "react"
+import { FunctionComponent, useCallback } from "react"
 import { FiDisc } from "react-icons/fi"
 import { IoChatbubbleOutline, IoCopyOutline, IoPerson } from "react-icons/io5"
 import { toast } from "react-toastify"
@@ -29,7 +29,7 @@ export const TrackRow: FunctionComponent<TrackRow> = ({
   },
 }) => {
   const accessToken = useRecoilValue(validAccessTokenOrNull)
-  const onClick = async () => {
+  const onClick = useCallback(async () => {
     if (!accessToken) return
 
     // Detect no device error and prompt for selection if possible.
@@ -62,7 +62,7 @@ export const TrackRow: FunctionComponent<TrackRow> = ({
         toast.error("Failed to add to queue 👎")
       }
     }
-  }
+  }, [accessToken, uri])
 
   const { data: currentPlayback } = useCurrentPlayback(accessToken)
 
